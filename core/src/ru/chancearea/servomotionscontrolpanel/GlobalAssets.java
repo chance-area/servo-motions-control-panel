@@ -16,6 +16,25 @@ import com.kotcrab.vis.ui.VisUI;
 import java.util.ArrayList;
 
 public abstract class GlobalAssets {
+    /** Colors dark theme **/
+    public static final Color DARK_COLOR_BG            = new Color(22f / 255f, 23f / 255f, 27f / 255f, 1f);
+
+    public static final Color DARK_COLOR_TABS          = new Color(29f / 255f, 30f / 255f, 33f / 255f, 1f);
+    public static final Color DARK_COLOR_TAB_HOVER     = new Color(17f / 255f, 18f / 255f, 19f / 255f, 1f);
+    public static final Color DARK_COLOR_TAB_SELECTED  = new Color(70f / 255f, 106f / 255f, 146f / 255f, 1f);
+
+    public static final Color DARK_COLOR_TABBED_PANELS = new Color(32f / 255f, 33f / 255f, 37f / 255f, 1f);
+    public static final Color DARK_COLOR_TEXTS         = new Color(82f / 255f, 83f / 255f, 87f / 255f, 1f);
+    public static final Color DARK_COLOR_MOVERS        = new Color(82f / 255f, 83f / 255f, 87f / 255f, 90f / 255f);
+    public static final Color DARK_COLOR_TABBED_TEXTS  = new Color(129f / 255f, 130f / 255f, 133f / 255f, 1f);
+    public static final Color DARK_COLOR_WHITE         = new Color(239f / 255f, 241f / 255f, 242f / 255f, 1f);
+    public static final Color DARK_COLOR_RED           = new Color(1, 70f / 255f, 61f / 255f, 1f);
+    public static final Color DARK_COLOR_GREEN         = new Color(1, 176f / 255f, 117f / 255f, 1f);
+    public static final Color DARK_COLOR_ORANGE        = new Color(244f / 255f, 88f / 255f, 39f / 255f, 1f);
+    public static final Color DARK_COLOR_BLUE          = new Color(90f / 255f, 160f / 255f, 253f / 255f, 1f);
+    public static final Color DARK_COLOR_PINK          = new Color(1f, 101f / 255f, 148f / 255f, 1f);
+    public static final Color DARK_COLOR_YELLOW        = new Color(254f / 255f, 231f / 255f, 115f / 255f, 1f);
+
     public static AssetManager assetManager;
 
     public static float FONT_SIZE_KOF = 1f;

@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -28,13 +29,20 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.kotcrab.vis.ui.widget.VisLabel;
 
+import javax.swing.JFrame;
+
 import ru.chancearea.servomotionscontrolpanel.panels.TabbedPanelsManager;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.ConfigurationTabPanel;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.DebuggingTabPanel;
+import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.EmulationTabPanel;
+import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.GraphsTabPanel;
+import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.RunTabPanel;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
 import ru.chancearea.servomotionscontrolpanel.utils.SerialPortManager;
 
 public class ServoMotionsControlPanel extends ApplicationAdapter {
+    public static JFrame superDuperJFrame = null;
+
     private OrthographicCamera ortCamera;
     private Viewport extViewport;
 
@@ -49,10 +57,21 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
     private Stage       debugStage;
     private VisLabel labelFPS;
 
+    public ServoMotionsControlPanel() {
+        GlobalVariables.isDesktop = false;
+    }
+
+    public ServoMotionsControlPanel(JFrame _jframe) {
+        superDuperJFrame = _jframe; // Костыль. Зато красивый.
+        GlobalVariables.isDesktop = true;
+        // or...
+        //GlobalVariables.isDesktop = (Gdx.app.getType() == Application.ApplicationType.Desktop);
+    }
+
     @Override
     public void create() {
         // ---- ### Debug info ### ----
-        if (GlobalConstants.IS_DEBUG_MODE && Gdx.app.getType() == Application.ApplicationType.Desktop) {
+        if (GlobalConstants.IS_DEBUG_MODE && GlobalVariables.isDesktop) {
             System.out.println("------------------------- DEBUG INFO -------------------------");
             Gdx.app.log(GlobalConstants.LOG_TAG_GL_VERSION, Gdx.graphics.getGLVersion().getMajorVersion() + "." + Gdx.graphics.getGLVersion().getMinorVersion());
             Gdx.app.log(GlobalConstants.LOG_TAG_TEXTURE_MAX_SIZE, String.valueOf(GL20.GL_MAX_TEXTURE_SIZE));
@@ -101,7 +120,7 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
             labelFPS = new VisLabel("FPS: " + GlobalConstants.FPS_LIMIT);
             labelFPS.setFontScale(0.3f);
             labelFPS.pack();
-            labelFPS.setColor(GlobalConstants.THEME_COLOR_TABBED_TEXTS);
+            labelFPS.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXTS);
 
             debugStage.addActor(labelFPS);
         }
@@ -115,7 +134,10 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
     private void initTabbedPanels() {
         tabbedPanelsManager = new TabbedPanelsManager();
         tabbedPanelsManager.addTabPanel(new ConfigurationTabPanel());
+        tabbedPanelsManager.addTabPanel(new EmulationTabPanel());
         tabbedPanelsManager.addTabPanel(new DebuggingTabPanel());
+        tabbedPanelsManager.addTabPanel(new RunTabPanel());
+        tabbedPanelsManager.addTabPanel(new GraphsTabPanel());
 
         rootStage.addActor(tabbedPanelsManager);
     }
@@ -135,6 +157,9 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
     }
 
     private void update(float _deltaTime) {
+        Vector3 mousePosUnp = ortCamera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        CustomInputProcessor.vPointerPosition.set(mousePosUnp.x, mousePosUnp.y);
+
         rootStage.act(_deltaTime);
 
         if (GlobalConstants.IS_DEBUG_MODE) {
@@ -158,13 +183,13 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         update(Gdx.app.getGraphics().getDeltaTime());
 
         if (Gdx.app.getGraphics().isGL30Available()) {
-            Gdx.gl30.glClearColor(GlobalConstants.THEME_COLOR_BG.r, GlobalConstants.THEME_COLOR_BG.g, GlobalConstants.THEME_COLOR_BG.b, GlobalConstants.THEME_COLOR_BG.a);
+            Gdx.gl30.glClearColor(GlobalAssets.DARK_COLOR_BG.r, GlobalAssets.DARK_COLOR_BG.g, GlobalAssets.DARK_COLOR_BG.b, GlobalAssets.DARK_COLOR_BG.a);
             Gdx.gl30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL30.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
             Gdx.gl30.glEnable(GL30.GL_BLEND);
             Gdx.gl30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
         } else {
-            Gdx.gl20.glClearColor(GlobalConstants.THEME_COLOR_BG.r, GlobalConstants.THEME_COLOR_BG.g, GlobalConstants.THEME_COLOR_BG.b, GlobalConstants.THEME_COLOR_BG.a);
+            Gdx.gl20.glClearColor(GlobalAssets.DARK_COLOR_BG.r, GlobalAssets.DARK_COLOR_BG.g, GlobalAssets.DARK_COLOR_BG.b, GlobalAssets.DARK_COLOR_BG.a);
             Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
             Gdx.gl20.glEnable(GL20.GL_BLEND);

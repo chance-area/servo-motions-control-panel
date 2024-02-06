@@ -4,10 +4,7 @@
 
 -dontwarn android.support.**
 -dontwarn com.badlogic.gdx.backends.android.AndroidFragmentApplication
--dontwarn com.badlogic.gdx.utils.GdxBuild
 -dontwarn com.badlogic.gdx.jnigen.BuildTarget*
--dontwarn com.badlogic.gdx.graphics.g2d.freetype.FreetypeBuild
--dontwarn org.slf4j.impl.StaticLoggerBinder
 
 -keepclassmembers class com.badlogic.gdx.backends.android.AndroidInput* {
    <init>(com.badlogic.gdx.Application, android.content.Context, java.lang.Object, com.badlogic.gdx.backends.android.AndroidApplicationConfiguration);
@@ -19,7 +16,7 @@
 -dontwarn sun.nio.ch.**
 -dontwarn sun.misc.**
 
--keepattributes !LocalVariable*,**
+-keepattributes !LocalVariable*
 
 # Keep names - Native method names. Keep all native class/method names.
 -keepclasseswithmembers,includedescriptorclasses class * {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl.LwjglCanvas;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
@@ -45,7 +46,7 @@ public class DesktopLauncher extends JFrame {
 		config.stencil = 2;
 		config.useGL30 = true; // Warring: this is experimental!
 
-		add(new LwjglCanvas(new ServoMotionsControlPanel(), config).getCanvas(), SwingConstants.CENTER);
+		add(new LwjglCanvas(new ServoMotionsControlPanel(this), config).getCanvas(), SwingConstants.CENTER);
 
 		SwingUtilities.invokeLater(() -> {
 			createBufferStrategy(1);

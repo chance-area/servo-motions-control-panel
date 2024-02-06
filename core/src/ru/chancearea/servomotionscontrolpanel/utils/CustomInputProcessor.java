@@ -1,8 +1,11 @@
 package ru.chancearea.servomotionscontrolpanel.utils;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.Vector2;
 
 public class CustomInputProcessor implements InputProcessor {
+    public static Vector2 vPointerPosition = new Vector2();
+
     @Override
     public boolean keyDown(int keycode) {
         return false;
@@ -40,6 +43,8 @@ public class CustomInputProcessor implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        vPointerPosition.set(screenX, screenY);
+
         return false;
     }
 

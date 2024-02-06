@@ -1,20 +1,18 @@
-package ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels;
+package ru.chancearea.servomotionscontrolpanel.panels;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import ru.chancearea.servomotionscontrolpanel.GlobalConstants;
 import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
-import ru.chancearea.servomotionscontrolpanel.panels.ITabPanel;
 
-public class DebuggingTabPanel implements ITabPanel {
+public class TemplateTabPanel implements ITabPanel {
     private int tabID       = -1;
-    private String tabTitle = "Отладка";
+    private String tabTitle = "Шаблон";
 
     private final ShapeRenderer shapeRenderer;
 
-    public DebuggingTabPanel() {
+    public TemplateTabPanel() {
         shapeRenderer = new ShapeRenderer();
     }
 
