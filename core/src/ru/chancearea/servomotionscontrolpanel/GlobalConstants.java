@@ -1,7 +1,5 @@
 package ru.chancearea.servomotionscontrolpanel;
 
-import com.badlogic.gdx.graphics.Color;
-
 public abstract class GlobalConstants {
     /** On/Off debug mode */
     public static final boolean IS_DEBUG_MODE = true;
@@ -10,6 +8,7 @@ public abstract class GlobalConstants {
     public static final String LOG_TAG_GL_VERSION       = "[GL] Version";
     public static final String LOG_TAG_JAVA_VERSION     = "[JAVA] Version";
     public static final String LOG_TAG_TEXTURE_MAX_SIZE = "[GL] Max texture size";
+    public static final String LOG_TAG_RAM_AVAILABLE    = "[RAM] Available";
     public static final String LOG_TAG_FATAL_ERROR      = "FATAL_ERROR";
     public static final String LOG_TAG_ERROR            = "ERROR";
 

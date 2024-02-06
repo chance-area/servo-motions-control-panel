@@ -1,4 +1,4 @@
-package ru.chancearea.servomotionscontrolpanel.panels;
+package ru.chancearea.servomotionscontrolpanel.ui.tabs;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,7 +11,6 @@ import java.awt.Cursor;
 import java.util.ArrayList;
 
 import ru.chancearea.servomotionscontrolpanel.GlobalAssets;
-import ru.chancearea.servomotionscontrolpanel.GlobalConstants;
 import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
 import ru.chancearea.servomotionscontrolpanel.ServoMotionsControlPanel;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
@@ -44,10 +43,18 @@ public class TabbedPanelsManager extends Actor {
 
         int i;
         for (i = 0; i < arrVisLabels.size(); i++) {
-            float sumSpacing = TABS_TITLES_PADDING_LR + (i > 0 ? SPACE_BETWEEN_TABS : 0);
+            if (i == 0) {
+                arrTabRectangles.get(i).set(getX(), (getHeight() + getY()) - (arrVisLabels.get(i).getHeight() + TABS_TITLES_PADDING_UB * 2), arrVisLabels.get(i).getWidth() + TABS_TITLES_PADDING_LR * 2, arrVisLabels.get(i).getHeight() + TABS_TITLES_PADDING_UB * 2);
+            } else {
+                Rectangle lastRect = arrTabRectangles.get( (i - 1) );
+                arrTabRectangles.get(i).set(lastRect.getX() + lastRect.getWidth() + SPACE_BETWEEN_TABS, lastRect.getY(), arrVisLabels.get(i).getWidth() + TABS_TITLES_PADDING_LR * 2, arrVisLabels.get(i).getHeight() + TABS_TITLES_PADDING_UB * 2);
+            }
 
+            arrTabPanels.get(i).setContentSize(getWidth(), getHeight() - (arrTabRectangles.get(0).getHeight() + LINE_HEIGHT));
+            arrTabPanels.get(i).setContentPos(getX(), getY());
+
+            arrVisLabels.get(i).setPosition(arrTabRectangles.get(i).getX() + TABS_TITLES_PADDING_LR, arrTabRectangles.get(i).getY() + TABS_TITLES_PADDING_UB);
             arrVisLabels.get(i).act(_delta);
-            arrVisLabels.get(i).setPosition(sumSpacing + (i > 0 ? ((arrVisLabels.get( (i - 1) ).getX() + sumSpacing) + arrVisLabels.get( (i - 1) ).getWidth()) : 0), (GlobalVariables.windowHeight - arrVisLabels.get(i).getHeight()) - TABS_TITLES_PADDING_UB + LINE_HEIGHT / 2f);
 
             if (Gdx.input.justTouched()) {
                 if (arrTabRectangles.get(i).contains(CustomInputProcessor.vPointerPosition)) selectedTabID = i;
@@ -81,7 +88,7 @@ public class TabbedPanelsManager extends Actor {
 
         // ------ Draw tab content -------
         for (ITabPanel tabPanel : arrTabPanels) {
-            if (tabPanel.getID() == selectedTabID) tabPanel.draw(_batch, _parentAlpha, GlobalVariables.windowHeight - (arrTabRectangles.get(0).getHeight() + LINE_HEIGHT), GlobalAssets.DARK_COLOR_TABBED_PANELS);
+            if (tabPanel.getID() == selectedTabID) tabPanel.draw(_batch, _parentAlpha, GlobalAssets.DARK_COLOR_TABBED_PANELS);
         }
 
         // Draw tabs
@@ -91,7 +98,7 @@ public class TabbedPanelsManager extends Actor {
 
             Rectangle currentRect = arrTabRectangles.get(i);
 
-            shapeRenderer.setColor((arrTabPanels.get(i).getID() != hoverTabID ? GlobalAssets.DARK_COLOR_TABS : GlobalAssets.DARK_COLOR_TAB_HOVER));
+            shapeRenderer.setColor(((arrTabPanels.get(i).getID() != hoverTabID) ? GlobalAssets.DARK_COLOR_TABS : GlobalAssets.DARK_COLOR_TAB_HOVER));
             shapeRenderer.rect(currentRect.getX(), currentRect.getY() - LINE_HEIGHT, currentRect.getWidth(), currentRect.getHeight() + LINE_HEIGHT);
 
             shapeRenderer.end();
@@ -106,7 +113,7 @@ public class TabbedPanelsManager extends Actor {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
             shapeRenderer.setColor(79f / 255f, 80f / 255f, 83f / 255f, 1f);
-            shapeRenderer.rect(0, arrTabRectangles.get(0).getY() - LINE_HEIGHT, GlobalVariables.windowWidth, LINE_HEIGHT);
+            shapeRenderer.rect(getX(), arrTabRectangles.get(0).getY() - LINE_HEIGHT, getWidth(), LINE_HEIGHT);
 
             for (int i = 0; i < arrTabPanels.size(); i++) {
                 if (arrTabPanels.get(i).getID() == selectedTabID) {
@@ -126,18 +133,11 @@ public class TabbedPanelsManager extends Actor {
 
         VisLabel newVisLabel = new VisLabel(_newTabPanel.getTitle());
         newVisLabel.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXTS);
-        newVisLabel.setFontScale(0.7f);
+        newVisLabel.setFontScale(GlobalVariables.isDesktop ? 0.5f : 0.57f);
         newVisLabel.pack();
-        arrVisLabels.add(newVisLabel);
 
-        Rectangle rect;
-        if (arrTabRectangles.size() == 0) {
-            rect = new Rectangle(0, GlobalVariables.windowHeight - (newVisLabel.getHeight() + TABS_TITLES_PADDING_UB * 2), newVisLabel.getWidth() + TABS_TITLES_PADDING_LR * 2, newVisLabel.getHeight() + TABS_TITLES_PADDING_UB * 2);
-        } else {
-            Rectangle lastRect = arrTabRectangles.get( (arrTabRectangles.size() - 1) );
-            rect = new Rectangle(lastRect.getX() + lastRect.getWidth() + SPACE_BETWEEN_TABS, lastRect.getY(), newVisLabel.getWidth() + TABS_TITLES_PADDING_LR * 2, newVisLabel.getHeight() + TABS_TITLES_PADDING_UB * 2);
-        }
-        arrTabRectangles.add(rect);
+        arrVisLabels.add(newVisLabel);
+        arrTabRectangles.add(new Rectangle());
 
         if (selectedTabID == -1) selectedTabID = 0;
     }

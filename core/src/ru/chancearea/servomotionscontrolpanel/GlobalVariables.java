@@ -7,4 +7,9 @@ public abstract class GlobalVariables {
 
     /** This is Desktop?! */
     public static boolean isDesktop = true;
+
+    /** User variables */
+    public static float radiusWheel = 0.03f;
+    public static float distanceBetweenMotors = 0.24f;
+    public static float maxLengthThreadUnwinding = 1.0f;
 }

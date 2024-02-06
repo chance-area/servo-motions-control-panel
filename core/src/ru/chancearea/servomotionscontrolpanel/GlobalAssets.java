@@ -27,7 +27,7 @@ public abstract class GlobalAssets {
     public static final Color DARK_COLOR_TEXTS         = new Color(82f / 255f, 83f / 255f, 87f / 255f, 1f);
     public static final Color DARK_COLOR_MOVERS        = new Color(82f / 255f, 83f / 255f, 87f / 255f, 90f / 255f);
     public static final Color DARK_COLOR_TABBED_TEXTS  = new Color(129f / 255f, 130f / 255f, 133f / 255f, 1f);
-    public static final Color DARK_COLOR_WHITE         = new Color(239f / 255f, 241f / 255f, 242f / 255f, 1f);
+    public static final Color DARK_COLOR_WHITE         = new Color(187f / 255f, 187f / 255f, 187f / 255f, 1f);
     public static final Color DARK_COLOR_RED           = new Color(1, 70f / 255f, 61f / 255f, 1f);
     public static final Color DARK_COLOR_GREEN         = new Color(1, 176f / 255f, 117f / 255f, 1f);
     public static final Color DARK_COLOR_ORANGE        = new Color(244f / 255f, 88f / 255f, 39f / 255f, 1f);
@@ -76,7 +76,7 @@ public abstract class GlobalAssets {
         parameter.incremental = false;
 
         // ### Main texts ###
-        parameter.size = 40; // ha-ha-ha... not cool
+        parameter.size = (GlobalVariables.isDesktop ? 34 : 44);
         FONT_MAIN_TEXT = fontGenerator.generateFont(parameter);
         FONT_MAIN_TEXT.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         FONT_MAIN_TEXT.setUseIntegerPositions(false);
@@ -94,14 +94,13 @@ public abstract class GlobalAssets {
 
     private static void initVisUI() {
         Skin skin = new Skin();
-        skin.add("font", FONT_MAIN_TEXT, BitmapFont.class);
-        skin.add("title", FONT_TITLE_TEXT, BitmapFont.class);
+        skin.add("small-font", FONT_MAIN_TEXT, BitmapFont.class);
+        skin.add("default-font", FONT_TITLE_TEXT, BitmapFont.class);
 
-        skin.addRegions(new TextureAtlas(Gdx.files.internal(("skins/neutralizer/neutralizer-ui.atlas"))));
-        skin.load(Gdx.files.internal("skins/neutralizer/neutralizer-ui.json"));
+        skin.addRegions(new TextureAtlas(Gdx.files.internal(("skin/uiskin.atlas"))));
+        skin.load(Gdx.files.internal("skin/uiskin.json"));
 
         VisUI.load(skin);
-        //VisUI.load();
     }
 
     public static void loadAllRes() {

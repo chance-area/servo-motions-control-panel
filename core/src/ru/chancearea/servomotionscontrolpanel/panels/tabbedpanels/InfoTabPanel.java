@@ -5,19 +5,18 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
 import ru.chancearea.servomotionscontrolpanel.ui.tabs.ITabPanel;
 
-public class DebuggingTabPanel implements ITabPanel {
+public class InfoTabPanel implements ITabPanel {
     private int tabID       = -1;
-    private String tabTitle = "Отладка";
+    private String tabTitle = "I";
     private Vector2 contentPos;
     private float contentWidth;
     private float contentHeight;
 
     private final ShapeRenderer shapeRenderer;
 
-    public DebuggingTabPanel() {
+    public InfoTabPanel() {
         shapeRenderer = new ShapeRenderer();
     }
 

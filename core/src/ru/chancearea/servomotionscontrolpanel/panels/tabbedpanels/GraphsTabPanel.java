@@ -3,14 +3,17 @@ package ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 
-import ru.chancearea.servomotionscontrolpanel.GlobalConstants;
 import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
-import ru.chancearea.servomotionscontrolpanel.panels.ITabPanel;
+import ru.chancearea.servomotionscontrolpanel.ui.tabs.ITabPanel;
 
 public class GraphsTabPanel implements ITabPanel {
     private int tabID       = -1;
     private String tabTitle = "Графики";
+    private Vector2 contentPos;
+    private float contentWidth;
+    private float contentHeight;
 
     private final ShapeRenderer shapeRenderer;
 
@@ -24,13 +27,13 @@ public class GraphsTabPanel implements ITabPanel {
     }
 
     @Override
-    public void draw(Batch _batch, float _parentAlpha, float _contentHeight, Color _bgColor) {
+    public void draw(Batch _batch, float _parentAlpha, Color _bgColor) {
         // Draw bg tabbed panel
         _batch.end();
         shapeRenderer.setProjectionMatrix(_batch.getProjectionMatrix());
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(_bgColor);
-        shapeRenderer.rect(0, 0, GlobalVariables.windowWidth, _contentHeight);
+        shapeRenderer.rect(contentPos.x, contentPos.y, contentWidth, contentHeight);
         shapeRenderer.end();
         _batch.begin();
 
@@ -50,6 +53,17 @@ public class GraphsTabPanel implements ITabPanel {
     @Override
     public void setID(int _newID) {
         tabID = _newID;
+    }
+
+    @Override
+    public void setContentPos(float _x, float _y) {
+        contentPos = new Vector2(_x, _y);
+    }
+
+    @Override
+    public void setContentSize(float _w, float _h) {
+        contentWidth  = _w;
+        contentHeight = _h;
     }
 
     @Override
