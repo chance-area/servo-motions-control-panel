@@ -149,6 +149,8 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
     public void resize(int _width, int _height) {
         super.resize(_width, _height);
 
+        Gdx.app.log("", "" + _width + "; " + _height);
+
         extViewport.update(_width, _height, true);
         ortCamera.position.set(ortCamera.viewportWidth / 2f, ortCamera.viewportHeight / 2f, 0);
 
@@ -205,9 +207,6 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
 
         extViewport.apply();
         ortCamera.update(true);
-        rootBatch.setProjectionMatrix(extViewport.getCamera().combined);
-
-        rootBatch.begin();
 
         if (Gdx.app.getGraphics().isGL30Available()) {
             Gdx.gl30.glClearColor(GlobalAssets.DARK_COLOR_BG.r, GlobalAssets.DARK_COLOR_BG.g, GlobalAssets.DARK_COLOR_BG.b, GlobalAssets.DARK_COLOR_BG.a);
@@ -216,6 +215,9 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
             Gdx.gl20.glClearColor(GlobalAssets.DARK_COLOR_BG.r, GlobalAssets.DARK_COLOR_BG.g, GlobalAssets.DARK_COLOR_BG.b, GlobalAssets.DARK_COLOR_BG.a);
             Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
         }
+
+        rootBatch.setProjectionMatrix(extViewport.getCamera().combined);
+        rootBatch.begin();
 
         renderFrame();
 

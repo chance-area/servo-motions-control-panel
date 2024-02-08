@@ -9,7 +9,7 @@ import ru.chancearea.servomotionscontrolpanel.ui.tabs.ITabPanel;
 
 public class InfoTabPanel implements ITabPanel {
     private int tabID       = -1;
-    private String tabTitle = "I";
+    private String tabTitle = "In";
     private Vector2 contentPos;
     private float contentWidth;
     private float contentHeight;

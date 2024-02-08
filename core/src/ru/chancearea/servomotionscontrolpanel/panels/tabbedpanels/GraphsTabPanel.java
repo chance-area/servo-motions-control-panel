@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
 import ru.chancearea.servomotionscontrolpanel.ui.tabs.ITabPanel;
 
 public class GraphsTabPanel implements ITabPanel {

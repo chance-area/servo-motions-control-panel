@@ -2,7 +2,9 @@ package ru.chancearea.servomotionscontrolpanel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
+import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -37,22 +39,16 @@ public abstract class GlobalAssets {
 
     public static AssetManager assetManager;
 
-    public static float FONT_SIZE_KOF = 1f;
-    public static BitmapFont FONT_MAIN_TEXT  = new BitmapFont();
-    public static BitmapFont FONT_TITLE_TEXT = new BitmapFont();
+    public static float      FONT_SIZE_KOF   = 1f;
+    public static BitmapFont FONT_MAIN_TEXT  = new BitmapFont(); // small font
+    public static BitmapFont FONT_TITLE_TEXT = new BitmapFont(); // big font
 
-    public enum AllTextures {
-        /*TEXTURE_ARROW,
-        TEXTURE_BG,*/
+    public enum Textures {
+        TEXTURE_INFO_ICON
     }
 
-    public enum All3DModels {
-        /*MODEL_PLATFORM,
-        MODEL_WHITE_PATH,
-        MODEL_GREEN_PATH,
-        MODEL_RED_PATH,
-        MODEL_BLACK_PATH,
-        MODEL_GRIPPER_PATH,*/
+    public enum Models {
+        // ...
     }
 
     public static final ArrayList<AssetDescriptor<Texture>> arrAllTextures = new ArrayList<>();
@@ -71,8 +67,8 @@ public abstract class GlobalAssets {
         parameter.color       = Color.WHITE;
         parameter.spaceX      = 2; // Use 3 for 'gotham_medium.otf'
         parameter.genMipMaps  = true;
-        parameter.minFilter   = Texture.TextureFilter.Linear;
-        parameter.magFilter   = Texture.TextureFilter.MipMapLinearNearest; // or Linear
+        parameter.minFilter   = Texture.TextureFilter.MipMap; // or Linear
+        parameter.magFilter   = Texture.TextureFilter.MipMapLinearNearest; // or Linear / MipMapNearest
         parameter.incremental = false;
 
         // ### Main texts ###
@@ -104,23 +100,23 @@ public abstract class GlobalAssets {
     }
 
     public static void loadAllRes() {
-        String _folderPngJpg   = "png_jpg";
-        String _folder3dModels = "3d_models";
+        String folderPngJpg   = "png";
+        String folder3dModels = "3d_models";
 
-        String[] arrPathPngJpg = {
-                // Lol, nothing
+        String[] arrPathPngFiles = {
+                "info_icon"
         };
 
-        String[] arrPath3dModels = {
-                // In future...
+        String[] arrPath3dModelFiles = {
+                // ...
         };
 
-        for (int i = 0; i < AllTextures.values().length; i++) {
-            AssetDescriptor<Texture> newTexture = new AssetDescriptor<>(Gdx.files.internal(_folderPngJpg + "/" + arrPathPngJpg[i] + ".png"), Texture.class);
+        for (int i = 0; i < Textures.values().length; i++) {
+            AssetDescriptor<Texture> newTexture = new AssetDescriptor<>(Gdx.files.internal(folderPngJpg + "/" + arrPathPngFiles[i] + ".png"), Texture.class);
             arrAllTextures.add(newTexture);
         }
-        for (int i = 0; i < All3DModels.values().length; i++) {
-            AssetDescriptor<Model> newModel = new AssetDescriptor<>(Gdx.files.internal(_folder3dModels + "/" + arrPath3dModels[i] + ".g3db"), Model.class);
+        for (int i = 0; i < Models.values().length; i++) {
+            AssetDescriptor<Model> newModel = new AssetDescriptor<>(Gdx.files.internal(folder3dModels + "/" + arrPath3dModelFiles[i] + ".g3db"), Model.class);
             arrAll3dModels.add(newModel);
         }
 
@@ -128,8 +124,15 @@ public abstract class GlobalAssets {
     }
 
     private static void startLoading() {
+        TextureLoader.TextureParameter textureParam = new TextureLoader.TextureParameter();
+        textureParam.genMipMaps = true;
+        textureParam.minFilter = Texture.TextureFilter.MipMap;
+        textureParam.magFilter = Texture.TextureFilter.Nearest;
+        textureParam.wrapU     = Texture.TextureWrap.ClampToEdge;
+        textureParam.wrapV     = Texture.TextureWrap.ClampToEdge;
+
         for (AssetDescriptor<Texture> texture : arrAllTextures) {
-            if (!assetManager.isLoaded(texture)) assetManager.load(texture);
+            if (!assetManager.isLoaded(texture)) assetManager.load(texture.fileName, Texture.class, textureParam);
         }
         for (AssetDescriptor<Model> model : arrAll3dModels) {
             if (!assetManager.isLoaded(model)) assetManager.load(model);
@@ -138,13 +141,18 @@ public abstract class GlobalAssets {
         assetManager.finishLoading();
     }
 
-    public static AssetDescriptor<Texture> getTextureDescriptor(int index) { return arrAllTextures.get(index); }
-    public static AssetDescriptor<Model>   get3dModelDescriptor(int index) { return arrAll3dModels.get(index); }
+    public static Texture getTexture(Textures _textureEnum) {
+        return assetManager.get(arrAllTextures.get(_textureEnum.ordinal()));
+    }
+    public static Model get3dModel(Models _modelEnum) {
+        return assetManager.get(arrAll3dModels.get(_modelEnum.ordinal()));
+    }
 
     public synchronized static void dispose() {
         FONT_MAIN_TEXT.dispose();
         FONT_TITLE_TEXT.dispose();
         assetManager.dispose();
+
         VisUI.dispose(false);
     }
 }

@@ -1,6 +1,7 @@
 package ru.chancearea.servomotionscontrolpanel.ui.tabs;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -24,6 +25,8 @@ public class TabbedPanelsManager extends Actor {
     private int selectedTabID = -1;
     private int hoverTabID    = -1;
 
+    private final Texture texInfoIcon;
+
     private final float SPACE_BETWEEN_TABS     = 0.7f;
     private final float TABS_TITLES_PADDING_LR = 12f; // Left and Right
     private final float TABS_TITLES_PADDING_UB = 7f; // Up and Bottom
@@ -35,6 +38,8 @@ public class TabbedPanelsManager extends Actor {
         arrTabRectangles = new ArrayList<>();
 
         shapeRenderer = new ShapeRenderer();
+
+        texInfoIcon = GlobalAssets.getTexture(GlobalAssets.Textures.TEXTURE_INFO_ICON);
     }
 
     @Override
@@ -104,7 +109,13 @@ public class TabbedPanelsManager extends Actor {
             shapeRenderer.end();
             _batch.begin();
 
-            arrVisLabels.get(i).draw(_batch, _parentAlpha);
+            // Here 'In' = 'Info'
+            if (arrVisLabels.get(i).getText().toString().equals("In")) {
+                float iconSize = arrTabRectangles.get(i).getHeight() - TABS_TITLES_PADDING_UB * 2; // width = height = size
+                _batch.draw(texInfoIcon, arrTabRectangles.get(i).getX() + (arrTabRectangles.get(i).getWidth() - iconSize) / 2f, arrTabRectangles.get(i).getY() + (arrTabRectangles.get(i).getHeight() - iconSize) / 2f, iconSize, iconSize);
+            } else {
+                arrVisLabels.get(i).draw(_batch, _parentAlpha);
+            }
         }
 
         // Draw lines (filled rects) bottom tabs titles
