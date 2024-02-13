@@ -32,8 +32,8 @@ public class ConfigurationTabPanel implements ITabPanel {
 
         for (int i = 0; i < arrSpinners.length; i++) {
             arrSpinners[i] = new CustomSpinner(arrSpinnersTitles[i], initialValues[i], (i == 2 ? 0.01f : 0.001f), (i == 2 ? 5 : 1), (i == 2 ? 0.01f : 0.001f));
-            arrSpinners[i].setSize(GlobalVariables.isDesktop ? 458 : 612, GlobalVariables.isDesktop ? 45 : 67);
-            arrSpinners[i].setPosition(80, 428 - i * arrSpinners[i].getHeight() * 2.7f * (GlobalVariables.isDesktop ? 1.35f : 1f));
+            arrSpinners[i].setSize(GlobalVariables.isDesktop ? 520 : 658, GlobalVariables.isDesktop ? 50 : 72);
+            arrSpinners[i].setPosition(80, (GlobalVariables.windowHeight + (GlobalVariables.isDesktop ? 262 : 234)) / 2 - i * arrSpinners[i].getHeight() * 2.7f * (GlobalVariables.isDesktop ? 1.35f : 1f));
             arrSpinners[i].setName((i == 0 ? "r" : (i == 1 ? "b" : "l")));
         }
     }

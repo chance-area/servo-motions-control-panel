@@ -4,9 +4,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl.LwjglCanvas;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -17,18 +17,32 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class DesktopLauncher extends JFrame {
 	public DesktopLauncher() {
-		setTitle(GlobalConstants.APP_TITLE + " (v. " + GlobalConstants.APP_VERSION + ")");
-		setSize(new Dimension((int) GlobalVariables.windowWidth, (int) GlobalVariables.windowHeight));
-		setPreferredSize(new Dimension(getWidth(), getHeight()));
-		setUndecorated(false);
-		setResizable(false);
-		setLayout(new GridLayout(1, 1));
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setAlwaysOnTop(false);
-		setAutoRequestFocus(true);
-		//setIconImage(new ImageIcon("./icon.png").getImage());
+		double screenScaleFactor = Toolkit.getDefaultToolkit().getScreenResolution() / 96.0f;
 
+		SwingUtilities.invokeLater(() -> {
+			setTitle(GlobalConstants.APP_TITLE + " (v. " + GlobalConstants.APP_VERSION + ")");
+			setSize(new Dimension((int) (GlobalVariables.windowWidth / screenScaleFactor + 14), (int) (GlobalVariables.windowHeight / screenScaleFactor + 37)));
+			setPreferredSize(new Dimension(getWidth(), getHeight()));
+			setLocationRelativeTo(null);
+
+			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			setUndecorated(false);
+			setResizable(false);
+			setLayout(new GridLayout(1, 1));
+			setAlwaysOnTop(false);
+			setAutoRequestFocus(true);
+			setIconImage(new ImageIcon("./app_icon.png").getImage());
+
+			add(new LwjglCanvas(new ServoMotionsControlPanel(this), getAppConfig()).getCanvas(), SwingConstants.CENTER);
+
+			createBufferStrategy(1);
+			setVisible(true);
+			toFront();
+			requestFocus();
+		});
+	}
+
+	private LwjglApplicationConfiguration getAppConfig() {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width         = (int) GlobalVariables.windowWidth;
 		config.height        = (int) GlobalVariables.windowHeight;
@@ -46,15 +60,7 @@ public class DesktopLauncher extends JFrame {
 		config.stencil = 2;
 		config.useGL30 = true; // Warring: this is experimental!
 
-		add(new LwjglCanvas(new ServoMotionsControlPanel(this), config).getCanvas(), SwingConstants.CENTER);
-
-		SwingUtilities.invokeLater(() -> {
-			createBufferStrategy(1);
-			setEnabled(true);
-			setVisible(true);
-			toFront();
-			requestFocus();
-		});
+		return config;
 	}
 
 	public static void main (String[] arg) {

@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -31,16 +30,17 @@ import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.GraphsTabPanel
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.RunTabPanel;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
 import ru.chancearea.servomotionscontrolpanel.utils.DrawingTools;
+import ru.chancearea.servomotionscontrolpanel.utils.MathPlus;
 import ru.chancearea.servomotionscontrolpanel.utils.SerialPortManager;
 
 public class ServoMotionsControlPanel extends ApplicationAdapter {
     public static JFrame superDuperJFrame = null;
 
-    private OrthographicCamera ortCamera;
-    private Viewport extViewport;
+    public static OrthographicCamera ortCamera   = null;
+    public static Viewport           extViewport = null;
 
-    private SpriteBatch     rootBatch;
-    private Stage           rootStage;
+    private SpriteBatch      rootBatch;
+    private Stage            rootStage;
     private InputMultiplexer rootInputMultiplexer;
     private ShapeRenderer shapeRenderer;
 
@@ -53,31 +53,38 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
 
     public ServoMotionsControlPanel() {
         GlobalVariables.isDesktop = false;
+        // or...
+        //GlobalVariables.isDesktop = (Gdx.app.getType() == Application.ApplicationType.Desktop);
     }
 
     public ServoMotionsControlPanel(JFrame _jframe) {
-        superDuperJFrame = _jframe; // Костыль. Зато красивый.
         GlobalVariables.isDesktop = true;
-        // or...
-        //GlobalVariables.isDesktop = (Gdx.app.getType() == Application.ApplicationType.Desktop);
+        superDuperJFrame = _jframe;
     }
 
     @Override
     public void create() {
         // ---- ### Debug info (Desktop) ### ----
         if (GlobalConstants.IS_DEBUG_MODE && GlobalVariables.isDesktop) {
-            System.out.println("------------------------- DEBUG INFO -------------------------");
+            System.out.println("\n------------------------- DEBUG INFO -------------------------");
 
-            Gdx.app.log(GlobalConstants.LOG_TAG_GL_VERSION, Gdx.graphics.getGLVersion().getMajorVersion() + "." + Gdx.graphics.getGLVersion().getMinorVersion());
-            Gdx.app.log(GlobalConstants.LOG_TAG_TEXTURE_MAX_SIZE, String.valueOf(GL20.GL_MAX_TEXTURE_SIZE));
-            Gdx.app.log(GlobalConstants.LOG_TAG_JAVA_VERSION, String.valueOf(System.getProperty("java.version")));
+            Gdx.app.log(GlobalConstants.LOG_TAG_GL, "Version " + Gdx.graphics.getGLVersion().getMajorVersion() + "." + Gdx.graphics.getGLVersion().getMinorVersion());
+            Gdx.app.log(GlobalConstants.LOG_TAG_GL, "Max texture size " + (Gdx.graphics.getGL20().GL_MAX_TEXTURE_SIZE));
+            Gdx.app.log(GlobalConstants.LOG_TAG_JAVA, "Version " + System.getProperty("java.version"));
 
             long ram   = Runtime.getRuntime().maxMemory();
             boolean gb = (ram >= 1024 * 1024 * 1024);
-            Gdx.app.log(GlobalConstants.LOG_TAG_RAM_AVAILABLE, (Math.floor((gb ? ram / 1024f / 1024 / 1024f : ram / 1024f / 1024f) * 10)) / 10 + " " + (gb ? "GB" : "MB"));
+            Gdx.app.log(GlobalConstants.LOG_TAG_RAM, "Available " + (Math.floor((gb ? ram / 1024f / 1024 / 1024f : ram / 1024f / 1024f) * 10)) / 10 + " " + (gb ? "GB" : "MB"));
 
-            System.out.println("----------------------- END DEBUG INFO -----------------------");
+            System.out.println("----------------------- END DEBUG INFO -----------------------\n");
         }
+
+        // Load user preferences
+        GlobalVariables.userPref = Gdx.app.getPreferences(GlobalConstants.USER_PREFERENCES_NAME);
+        GlobalVariables.radiusWheel              = GlobalVariables.userPref.getFloat("radius_wheel", 0.03f);
+        GlobalVariables.distanceBetweenMotors    = GlobalVariables.userPref.getFloat("distance_between_motors", 0.24f);
+        GlobalVariables.maxLengthThreadUnwinding = GlobalVariables.userPref.getFloat("max_length_thread_unwinding", 1.0f);
+        GlobalVariables.localESP32IP             = GlobalVariables.userPref.getString("local_esp32_ip", "255.255.255.255");
 
         ortCamera   = new OrthographicCamera(GlobalVariables.windowWidth, GlobalVariables.windowHeight);
         extViewport = new ExtendViewport(ortCamera.viewportWidth, ortCamera.viewportHeight, ortCamera);
@@ -91,8 +98,8 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
 
         rootStage.getRoot().addCaptureListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                if (!(event.getTarget() instanceof TextField) && !(event.getTarget() instanceof Image)) {
+            public boolean touchDown (InputEvent _event, float _x, float _y, int _pointer, int _button) {
+                if (!(_event.getTarget() instanceof TextField) && !(_event.getTarget() instanceof Image)) {
                     rootStage.setKeyboardFocus(null);
                     Gdx.input.setOnscreenKeyboardVisible(false);
                 }
@@ -119,9 +126,9 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
             rootInputMultiplexer.addProcessor(debugStage);
 
             labelFPS = new VisLabel("FPS: " + GlobalConstants.FPS_LIMIT);
-            labelFPS.setFontScale(0.23f);
-            labelFPS.pack();
             labelFPS.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXTS);
+            labelFPS.setFontScale(0.42f);
+            labelFPS.pack();
 
             debugStage.addActor(labelFPS);
         }
@@ -145,28 +152,7 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         rootStage.addActor(tabbedPanelsManager);
     }
 
-    @Override
-    public void resize(int _width, int _height) {
-        super.resize(_width, _height);
-
-        Gdx.app.log("", "" + _width + "; " + _height);
-
-        extViewport.update(_width, _height, true);
-        ortCamera.position.set(ortCamera.viewportWidth / 2f, ortCamera.viewportHeight / 2f, 0);
-
-        GlobalVariables.windowWidth  = extViewport.getWorldWidth();
-        GlobalVariables.windowHeight = extViewport.getWorldHeight();
-
-        rootStage.getViewport().update(_width, _height, true);
-        if (GlobalConstants.IS_DEBUG_MODE) debugStage.getViewport().update(_width, _height, true);
-    }
-
     private void update(float _deltaTime) {
-        Vector3 mousePosUnp = ortCamera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        CustomInputProcessor.vPointerPosition.set(mousePosUnp.x, mousePosUnp.y);
-
-        if (!GlobalVariables.isDesktop && !Gdx.input.isTouched()) CustomInputProcessor.vPointerPosition.set(-1, -1);
-
         tabbedPanelsManager.setPosition(0, 0);
         tabbedPanelsManager.setSize(GlobalVariables.windowWidth, GlobalVariables.windowHeight);
         rootStage.act(_deltaTime);
@@ -175,7 +161,7 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
             debugStage.act(_deltaTime);
 
             labelFPS.setText("FPS: " + Gdx.app.getGraphics().getFramesPerSecond());
-            labelFPS.setPosition((GlobalVariables.windowWidth - labelFPS.getWidth()) - 5, (GlobalVariables.windowHeight - labelFPS.getHeight()) - 5);
+            labelFPS.setPosition((GlobalVariables.windowWidth - labelFPS.getWidth()) - (GlobalVariables.isDesktop ? 5 : 25), 5);
         }
     }
 
@@ -189,16 +175,32 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         DrawingTools.enableGLBlend();
 
         shapeRenderer.setColor(GlobalAssets.DARK_COLOR_BG.r, GlobalAssets.DARK_COLOR_BG.g, GlobalAssets.DARK_COLOR_BG.b, 0.5f);
-        shapeRenderer.rect(0, 0, GlobalVariables.windowWidth, 30);
+        shapeRenderer.rect(0, 0, GlobalVariables.windowWidth, (GlobalVariables.isDesktop ? 30 : 34));
 
         shapeRenderer.end();
         DrawingTools.disableGLBlend();
-
         rootBatch.begin();
     }
 
     private void renderDebugFrame() {
         debugStage.draw();
+    }
+
+    @Override
+    public void resize(int _width, int _height) {
+        super.resize(_width, _height);
+
+        extViewport.update(_width, _height, true);
+        ortCamera.position.set(ortCamera.viewportWidth / 2f, ortCamera.viewportHeight / 2f, 0);
+
+        GlobalVariables.windowWidth  = extViewport.getWorldWidth();
+        GlobalVariables.windowHeight = extViewport.getWorldHeight();
+        rootStage.getViewport().update(_width, _height, true);
+
+        if (GlobalConstants.IS_DEBUG_MODE) {
+            debugStage.getViewport().update(_width, _height, true);
+            Gdx.app.log(GlobalConstants.LOG_TAG_RESIZE_EVENT, "w: " + _width + "; h = " + _height + "\n               viewport size: " + (int) GlobalVariables.windowWidth + "x" + (int) GlobalVariables.windowHeight + "; ratio: " + MathPlus.roundTo(GlobalVariables.windowWidth / GlobalVariables.windowHeight, 4));
+        }
     }
 
     @Override
@@ -251,6 +253,7 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         rootBatch.dispose();
         tabbedPanelsManager.dispose();
         rootStage.dispose();
+        shapeRenderer.dispose();
         GlobalAssets.dispose();
 
         if (SerialPortManager.serialPort != null) {

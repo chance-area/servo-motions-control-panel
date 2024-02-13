@@ -13,8 +13,9 @@ import java.util.ArrayList;
 
 import ru.chancearea.servomotionscontrolpanel.GlobalAssets;
 import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
-import ru.chancearea.servomotionscontrolpanel.ServoMotionsControlPanel;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
+import ru.chancearea.servomotionscontrolpanel.utils.DrawingTools;
+import ru.chancearea.servomotionscontrolpanel.utils.MathPlus;
 
 public class TabbedPanelsManager extends Actor {
     private final ArrayList<ITabPanel> arrTabPanels;
@@ -55,6 +56,9 @@ public class TabbedPanelsManager extends Actor {
                 arrTabRectangles.get(i).set(lastRect.getX() + lastRect.getWidth() + SPACE_BETWEEN_TABS, lastRect.getY(), arrVisLabels.get(i).getWidth() + TABS_TITLES_PADDING_LR * 2, arrVisLabels.get(i).getHeight() + TABS_TITLES_PADDING_UB * 2);
             }
 
+            // Here 'In' = 'Info'
+            if (arrVisLabels.get(i).getText().toString().equals("In")) arrTabRectangles.get(i).setX(GlobalVariables.windowWidth - arrTabRectangles.get(i).getWidth());
+
             arrTabPanels.get(i).setContentSize(getWidth(), getHeight() - (arrTabRectangles.get(0).getHeight() + LINE_HEIGHT));
             arrTabPanels.get(i).setContentPos(getX(), getY());
 
@@ -71,8 +75,7 @@ public class TabbedPanelsManager extends Actor {
             if (rect.contains(CustomInputProcessor.vPointerPosition)) {
                 hoverTabID = arrTabPanels.get(i).getID();
 
-                if (GlobalVariables.isDesktop) ServoMotionsControlPanel.superDuperJFrame.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
+                DrawingTools.setCursor(Cursor.HAND_CURSOR);
                 break;
             }
 
@@ -104,12 +107,12 @@ public class TabbedPanelsManager extends Actor {
             Rectangle currentRect = arrTabRectangles.get(i);
 
             shapeRenderer.setColor(((arrTabPanels.get(i).getID() != hoverTabID) ? GlobalAssets.DARK_COLOR_TABS : GlobalAssets.DARK_COLOR_TAB_HOVER));
-            shapeRenderer.rect(currentRect.getX(), currentRect.getY() - LINE_HEIGHT, currentRect.getWidth(), currentRect.getHeight() + LINE_HEIGHT);
+            shapeRenderer.rect(currentRect.getX(), (currentRect.getY() - LINE_HEIGHT), currentRect.getWidth(), currentRect.getHeight() + LINE_HEIGHT);
 
             shapeRenderer.end();
             _batch.begin();
 
-            // Here 'In' = 'Info'
+            // Draw 'Info' icon
             if (arrVisLabels.get(i).getText().toString().equals("In")) {
                 float iconSize = arrTabRectangles.get(i).getHeight() - TABS_TITLES_PADDING_UB * 2; // width = height = size
                 _batch.draw(texInfoIcon, arrTabRectangles.get(i).getX() + (arrTabRectangles.get(i).getWidth() - iconSize) / 2f, arrTabRectangles.get(i).getY() + (arrTabRectangles.get(i).getHeight() - iconSize) / 2f, iconSize, iconSize);
@@ -144,7 +147,7 @@ public class TabbedPanelsManager extends Actor {
 
         VisLabel newVisLabel = new VisLabel(_newTabPanel.getTitle());
         newVisLabel.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXTS);
-        newVisLabel.setFontScale(GlobalVariables.isDesktop ? 0.5f : 0.57f);
+        newVisLabel.setFontScale(GlobalVariables.isDesktop ? 0.88f : MathPlus.roundTo( (((float) Gdx.graphics.getWidth() / 100) * 4.72f) / 100f, 2 ));
         newVisLabel.pack();
 
         arrVisLabels.add(newVisLabel);

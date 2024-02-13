@@ -11,7 +11,6 @@ import java.awt.Cursor;
 
 import ru.chancearea.servomotionscontrolpanel.GlobalAssets;
 import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
-import ru.chancearea.servomotionscontrolpanel.ServoMotionsControlPanel;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
 import ru.chancearea.servomotionscontrolpanel.utils.DrawingTools;
 import ru.chancearea.servomotionscontrolpanel.utils.MathPlus;
@@ -29,7 +28,7 @@ public class CustomSpinner extends Actor {
 
     private final float BORDER_SIZE        = 2f;
     private final float BORDER_RADIUS      = 4f;
-    private final float BUTTONS_SPACE_SIZE = GlobalVariables.isDesktop ? 30f : 42f;
+    private final float BUTTONS_SPACE_SIZE = GlobalVariables.isDesktop ? 32f : 44f;
 
     private Rectangle rectTopButton;
     private Rectangle rectBottomButton;
@@ -38,12 +37,12 @@ public class CustomSpinner extends Actor {
         super();
 
         titleLabel = new VisLabel(_title);
-        titleLabel.setFontScale(GlobalVariables.isDesktop ? 0.4f : 0.42f);
+        titleLabel.setFontScale(0.72f);
         titleLabel.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXTS);
         titleLabel.pack();
 
         valueLabel = new VisLabel(String.valueOf(_defaultVal));
-        valueLabel.setFontScale(GlobalVariables.isDesktop ? 0.38f : 0.4f);
+        valueLabel.setFontScale(0.7f);
         valueLabel.setColor(GlobalAssets.DARK_COLOR_WHITE);
         valueLabel.pack();
 
@@ -64,18 +63,26 @@ public class CustomSpinner extends Actor {
             rectBottomButton = new Rectangle(getX() + getWidth() + BORDER_SIZE - BUTTONS_SPACE_SIZE, getY(), BUTTONS_SPACE_SIZE - BORDER_SIZE, getHeight() / 2f);
         } else {
             if (rectTopButton.contains(CustomInputProcessor.vPointerPosition) || rectBottomButton.contains(CustomInputProcessor.vPointerPosition)) {
-                if (GlobalVariables.isDesktop) ServoMotionsControlPanel.superDuperJFrame.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                DrawingTools.setCursor(Cursor.HAND_CURSOR);
 
                 if (Gdx.input.justTouched()) {
                     value += (rectTopButton.contains(CustomInputProcessor.vPointerPosition) ? step : (rectBottomButton.contains(CustomInputProcessor.vPointerPosition) ? -step : 0));
-                    value = MathPlus.roundTo(value, 5);
+                    value = MathPlus.roundTo(value, 4);
 
                     if (value > maxValue)      value = maxValue;
                     else if (value < minValue) value = minValue;
 
-                    if (getName().equals("r"))      GlobalVariables.radiusWheel              = value;
-                    else if (getName().equals("b")) GlobalVariables.distanceBetweenMotors    = value;
-                    else if (getName().equals("l")) GlobalVariables.maxLengthThreadUnwinding = value;
+                    if (getName().equals("r")) {
+                        GlobalVariables.radiusWheel = value;
+                        GlobalVariables.userPref.putFloat("radius_wheel", value);
+                    } else if (getName().equals("b")) {
+                        GlobalVariables.distanceBetweenMotors = value;
+                        GlobalVariables.userPref.putFloat("distance_between_motors", value);
+                    } else if (getName().equals("l")) {
+                        GlobalVariables.maxLengthThreadUnwinding = value;
+                        GlobalVariables.userPref.putFloat("max_length_thread_unwinding", value);
+                    }
+                    GlobalVariables.userPref.flush();
 
                     valueLabel.setText(String.valueOf(value));
                     valueLabel.pack();
@@ -99,9 +106,9 @@ public class CustomSpinner extends Actor {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         shapeRenderer.setColor(91f / 255f, 92f / 255f, 95f / 255f, 1f);
-        DrawingTools.drawRoundedRect(shapeRenderer, getX() - BORDER_SIZE, getY() - BORDER_SIZE, getWidth() + BORDER_SIZE * 2, getHeight() + BORDER_SIZE * 2, BORDER_RADIUS);
+        DrawingTools.drawRoundedRect(shapeRenderer, getX() - BORDER_SIZE, getY() - BORDER_SIZE, getWidth() + BORDER_SIZE * 2, getHeight() + BORDER_SIZE * 2, BORDER_RADIUS, true, true, true, true);
         shapeRenderer.setColor(70f / 255f, 73f / 255f, 75f / 255f, 1f);
-        DrawingTools.drawRoundedRect(shapeRenderer, getX(), getY(), getWidth(), getHeight(), BORDER_RADIUS);
+        DrawingTools.drawRoundedRect(shapeRenderer, getX(), getY(), getWidth(), getHeight(), BORDER_RADIUS, true, true, true, true);
 
         shapeRenderer.setColor(91f / 255f, 92f / 255f, 95f / 255f, 1f);
         shapeRenderer.rect(getX() + getWidth() - BUTTONS_SPACE_SIZE, getY(), BORDER_SIZE, getHeight());
@@ -112,11 +119,11 @@ public class CustomSpinner extends Actor {
         // Top and bottom buttons
         if (rectTopButton.contains(CustomInputProcessor.vPointerPosition)) shapeRenderer.setColor(62f / 255f, 65f / 255f, 67f / 255f, 1f);
         else shapeRenderer.setColor(65f / 255f, 68f / 255f, 70f / 255f, 1f);
-        shapeRenderer.rect(rectTopButton.getX(), rectTopButton.getY(), rectTopButton.getWidth(), rectTopButton.getHeight());
+        DrawingTools.drawRoundedRect(shapeRenderer, rectTopButton.getX(), rectTopButton.getY(), rectTopButton.getWidth(), rectTopButton.getHeight(), BORDER_RADIUS, false, true, false, false);
 
         if (rectBottomButton.contains(CustomInputProcessor.vPointerPosition)) shapeRenderer.setColor(62f / 255f, 65f / 255f, 67f / 255f, 1f);
         else shapeRenderer.setColor(65f / 255f, 68f / 255f, 70f / 255f, 1f);
-        shapeRenderer.rect(rectBottomButton.getX(), rectBottomButton.getY(), rectBottomButton.getWidth(), rectBottomButton.getHeight());
+        DrawingTools.drawRoundedRect(shapeRenderer, rectBottomButton.getX(), rectBottomButton.getY(), rectBottomButton.getWidth(), rectBottomButton.getHeight(), BORDER_RADIUS, false, false, false, true);
 
         // Arrows
         float butPadding = GlobalVariables.isDesktop ? 8f : 12f;

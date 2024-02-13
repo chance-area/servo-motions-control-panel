@@ -62,7 +62,7 @@ public abstract class GlobalAssets {
         FreeTypeFontParameter parameter     = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
         parameter.characters  = GlobalConstants.FONT_CHARS;
-        parameter.borderWidth = 0.6f;
+        parameter.borderWidth = 0.3f;
         parameter.borderColor = Color.WHITE;
         parameter.color       = Color.WHITE;
         parameter.spaceX      = 2; // Use 3 for 'gotham_medium.otf'
@@ -72,7 +72,7 @@ public abstract class GlobalAssets {
         parameter.incremental = false;
 
         // ### Main texts ###
-        parameter.size = (GlobalVariables.isDesktop ? 34 : 44);
+        parameter.size = (GlobalVariables.isDesktop ? 20 : 27);
         FONT_MAIN_TEXT = fontGenerator.generateFont(parameter);
         FONT_MAIN_TEXT.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         FONT_MAIN_TEXT.setUseIntegerPositions(false);
