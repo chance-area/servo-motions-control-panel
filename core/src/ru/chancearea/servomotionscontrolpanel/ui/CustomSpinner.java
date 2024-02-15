@@ -1,6 +1,7 @@
 package ru.chancearea.servomotionscontrolpanel.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -119,11 +120,11 @@ public class CustomSpinner extends Actor {
         // Top and bottom buttons
         if (rectTopButton.contains(CustomInputProcessor.vPointerPosition)) shapeRenderer.setColor(62f / 255f, 65f / 255f, 67f / 255f, 1f);
         else shapeRenderer.setColor(65f / 255f, 68f / 255f, 70f / 255f, 1f);
-        DrawingTools.drawRoundedRect(shapeRenderer, rectTopButton.getX(), rectTopButton.getY(), rectTopButton.getWidth(), rectTopButton.getHeight(), BORDER_RADIUS, false, true, false, false);
+        DrawingTools.drawRoundedRect(shapeRenderer, rectTopButton.getX(), rectTopButton.getY(), rectTopButton.getWidth(), rectTopButton.getHeight(), (BORDER_RADIUS - BORDER_SIZE), false, true, false, false);
 
         if (rectBottomButton.contains(CustomInputProcessor.vPointerPosition)) shapeRenderer.setColor(62f / 255f, 65f / 255f, 67f / 255f, 1f);
         else shapeRenderer.setColor(65f / 255f, 68f / 255f, 70f / 255f, 1f);
-        DrawingTools.drawRoundedRect(shapeRenderer, rectBottomButton.getX(), rectBottomButton.getY(), rectBottomButton.getWidth(), rectBottomButton.getHeight(), BORDER_RADIUS, false, false, false, true);
+        DrawingTools.drawRoundedRect(shapeRenderer, rectBottomButton.getX(), rectBottomButton.getY(), rectBottomButton.getWidth(), rectBottomButton.getHeight(), (BORDER_RADIUS - BORDER_SIZE), false, false, false, true);
 
         // Arrows
         float butPadding = GlobalVariables.isDesktop ? 8f : 12f;
