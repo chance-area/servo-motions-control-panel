@@ -27,7 +27,7 @@ public class DesktopLauncher extends JFrame {
 
 			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 			setUndecorated(false);
-			setResizable(false);
+			setResizable(true);
 			setLayout(new GridLayout(1, 1));
 			setAlwaysOnTop(false);
 			setAutoRequestFocus(true);

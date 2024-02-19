@@ -25,6 +25,17 @@ public abstract class GlobalConstants {
     public static final String SAVE_EXCEL_FILES_FOLDER_NAME = "_excel-graphs_";
     public static final String SAVE_SCREENSHOTS_FOLDER_NAME = "_screenshots_";
 
+    /** Save/Load -> Key names */
+    public static final String KEY_PLATFORM_LENGTH          = "platform_length";
+    public static final String KEY_PLATFORM_WIDTH           = "platform_width";
+    public static final String KEY_PLATFORM_HEIGHT          = "platform_height";
+    public static final String KEY_RADIUS_WHEEL             = "radius_wheel";
+    public static final String KEY_DISTANCE_BETWEEN_MOTORS  = "distance_between_motors";
+    public static final String KEY_MAX_LENGTH_UNWINDING     = "max_length_thread_unwinding";
+    public static final String KEY_LOCAL_EPS32_IP           = "local_esp32_ip";
+    public static final String KEY_SELECTED_TAB_ID_MAIN     = "selected_tab_id_main";
+    public static final String KEY_SELECTED_TAB_ID_SETTINGS = "selected_tab_id_settings";
+
     /** For FreeTypeFont **/
     public static final String FONT_CHARS = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
 }

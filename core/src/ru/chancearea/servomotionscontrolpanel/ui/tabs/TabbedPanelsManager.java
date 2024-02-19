@@ -12,6 +12,7 @@ import java.awt.Cursor;
 import java.util.ArrayList;
 
 import ru.chancearea.servomotionscontrolpanel.GlobalAssets;
+import ru.chancearea.servomotionscontrolpanel.GlobalConstants;
 import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
 import ru.chancearea.servomotionscontrolpanel.utils.DrawingTools;
@@ -22,8 +23,8 @@ public class TabbedPanelsManager extends Actor {
     private final ArrayList<VisLabel> arrVisLabels;
     private final ArrayList<Rectangle> arrTabRectangles;
 
-    private final ShapeRenderer shapeRenderer;
-    private int selectedTabID = -1;
+    private final ShapeRenderer uiShapeRenderer;
+    private int selectedTabID = 0;
     private int hoverTabID    = -1;
 
     private final Texture texInfoIcon;
@@ -38,9 +39,11 @@ public class TabbedPanelsManager extends Actor {
         arrVisLabels     = new ArrayList<>();
         arrTabRectangles = new ArrayList<>();
 
-        shapeRenderer = new ShapeRenderer();
+        uiShapeRenderer = new ShapeRenderer();
 
         texInfoIcon = GlobalAssets.getTexture(GlobalAssets.Textures.TEXTURE_INFO_ICON);
+
+        if (getName() == null) setName("none");
     }
 
     @Override
@@ -66,7 +69,18 @@ public class TabbedPanelsManager extends Actor {
             arrVisLabels.get(i).act(_delta);
 
             if (Gdx.input.justTouched()) {
-                if (arrTabRectangles.get(i).contains(CustomInputProcessor.vPointerPosition)) selectedTabID = i;
+                if (arrTabRectangles.get(i).contains(CustomInputProcessor.vPointerPosition)) {
+                    selectedTabID = i;
+
+                    if (getName().equals("main")) {
+                        GlobalVariables.selectedTabID_main = i;
+                        GlobalVariables.userPref.putInteger(GlobalConstants.KEY_SELECTED_TAB_ID_MAIN, i);
+                    } else if (getName().equals("settings")) {
+                        GlobalVariables.selectedTabID_settings = i;
+                        GlobalVariables.userPref.putInteger(GlobalConstants.KEY_SELECTED_TAB_ID_SETTINGS, i);
+                    }
+                    GlobalVariables.userPref.flush();
+                }
             }
         }
 
@@ -92,24 +106,24 @@ public class TabbedPanelsManager extends Actor {
     @Override
     public void draw(Batch _batch, float _parentAlpha) {
         super.draw(_batch, _parentAlpha);
-        shapeRenderer.setProjectionMatrix(_batch.getProjectionMatrix());
+        uiShapeRenderer.setProjectionMatrix(_batch.getProjectionMatrix());
 
         // ------ Draw tab content -------
         for (ITabPanel tabPanel : arrTabPanels) {
-            if (tabPanel.getID() == selectedTabID) tabPanel.draw(_batch, _parentAlpha, GlobalAssets.DARK_COLOR_TABBED_PANELS);
+            if (tabPanel.getID() == selectedTabID) tabPanel.draw(_batch, _parentAlpha, GlobalAssets.DARK_COLOR_TABBED_PANEL_1);
         }
 
         // Draw tabs
         for (int i = 0; i < arrVisLabels.size(); i++) {
             _batch.end();
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            uiShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
             Rectangle currentRect = arrTabRectangles.get(i);
 
-            shapeRenderer.setColor(((arrTabPanels.get(i).getID() != hoverTabID) ? GlobalAssets.DARK_COLOR_TABS : GlobalAssets.DARK_COLOR_TAB_HOVER));
-            shapeRenderer.rect(currentRect.getX(), (currentRect.getY() - LINE_HEIGHT), currentRect.getWidth(), currentRect.getHeight() + LINE_HEIGHT);
+            uiShapeRenderer.setColor(((arrTabPanels.get(i).getID() != hoverTabID) ? GlobalAssets.DARK_COLOR_TABS : GlobalAssets.DARK_COLOR_TAB_HOVER));
+            uiShapeRenderer.rect(currentRect.getX(), (currentRect.getY() - LINE_HEIGHT), currentRect.getWidth(), currentRect.getHeight() + LINE_HEIGHT);
 
-            shapeRenderer.end();
+            uiShapeRenderer.end();
             _batch.begin();
 
             // Draw 'Info' icon
@@ -124,19 +138,19 @@ public class TabbedPanelsManager extends Actor {
         // Draw lines (filled rects) bottom tabs titles
         if (arrTabRectangles.size() > 0) {
             _batch.end();
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            uiShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-            shapeRenderer.setColor(79f / 255f, 80f / 255f, 83f / 255f, 1f);
-            shapeRenderer.rect(getX(), arrTabRectangles.get(0).getY() - LINE_HEIGHT, getWidth(), LINE_HEIGHT);
+            uiShapeRenderer.setColor(79f / 255f, 80f / 255f, 83f / 255f, 1f);
+            uiShapeRenderer.rect(getX(), arrTabRectangles.get(0).getY() - LINE_HEIGHT, getWidth(), LINE_HEIGHT);
 
             for (int i = 0; i < arrTabPanels.size(); i++) {
                 if (arrTabPanels.get(i).getID() == selectedTabID) {
-                    shapeRenderer.setColor(GlobalAssets.DARK_COLOR_TAB_SELECTED);
-                    shapeRenderer.rect(arrTabRectangles.get(i).getX(), arrTabRectangles.get(i).getY() - LINE_HEIGHT, arrTabRectangles.get(i).getWidth(), LINE_HEIGHT * 3f);
+                    uiShapeRenderer.setColor(GlobalAssets.DARK_COLOR_TAB_SELECTED);
+                    uiShapeRenderer.rect(arrTabRectangles.get(i).getX(), arrTabRectangles.get(i).getY() - LINE_HEIGHT, arrTabRectangles.get(i).getWidth(), LINE_HEIGHT * 3f);
                 }
             }
 
-            shapeRenderer.end();
+            uiShapeRenderer.end();
             _batch.begin();
         }
     }
@@ -146,18 +160,32 @@ public class TabbedPanelsManager extends Actor {
         arrTabPanels.add(_newTabPanel);
 
         VisLabel newVisLabel = new VisLabel(_newTabPanel.getTitle());
-        newVisLabel.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXTS);
+        newVisLabel.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXT);
         newVisLabel.setFontScale(GlobalVariables.isDesktop ? 0.88f : MathPlus.roundTo( (((float) Gdx.graphics.getWidth() / 100) * 4.72f) / 100f, 2 ));
         newVisLabel.pack();
 
         arrVisLabels.add(newVisLabel);
         arrTabRectangles.add(new Rectangle());
+    }
 
-        if (selectedTabID == -1) selectedTabID = 0;
+    public void setSelectedTabID(int _tabID) {
+        if (_tabID < arrTabPanels.size()) selectedTabID = _tabID;
+    }
+
+    @Override
+    public void setSize(float _width, float _height) {
+        super.setSize(_width, _height);
+
+        if (_width == -1) {
+            float widthAllTabRectangles = 0;
+            for (Rectangle rect : arrTabRectangles) widthAllTabRectangles += rect.getWidth() + SPACE_BETWEEN_TABS;
+
+            setWidth(widthAllTabRectangles);
+        }
     }
 
     public void dispose() {
-        shapeRenderer.dispose();
+        uiShapeRenderer.dispose();
         for (ITabPanel tabPanel : arrTabPanels) tabPanel.dispose();
     }
 }

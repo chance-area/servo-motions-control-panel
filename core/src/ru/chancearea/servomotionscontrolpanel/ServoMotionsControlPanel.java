@@ -80,11 +80,7 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         }
 
         // Load user preferences
-        GlobalVariables.userPref = Gdx.app.getPreferences(GlobalConstants.USER_PREFERENCES_NAME);
-        GlobalVariables.radiusWheel              = GlobalVariables.userPref.getFloat("radius_wheel", 0.03f);
-        GlobalVariables.distanceBetweenMotors    = GlobalVariables.userPref.getFloat("distance_between_motors", 0.24f);
-        GlobalVariables.maxLengthThreadUnwinding = GlobalVariables.userPref.getFloat("max_length_thread_unwinding", 1.0f);
-        GlobalVariables.localESP32IP             = GlobalVariables.userPref.getString("local_esp32_ip", "255.255.255.255");
+        loadUserPref();
 
         ortCamera   = new OrthographicCamera(GlobalVariables.windowWidth, GlobalVariables.windowHeight);
         extViewport = new ExtendViewport(ortCamera.viewportWidth, ortCamera.viewportHeight, ortCamera);
@@ -122,11 +118,11 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
             debugBatch = new SpriteBatch();
             debugStage = new Stage(rootStage.getViewport());
 
-            //debugStage.setDebugAll(true);
+            debugStage.setDebugAll(false);
             rootInputMultiplexer.addProcessor(debugStage);
 
             labelFPS = new VisLabel("FPS: " + GlobalConstants.FPS_LIMIT);
-            labelFPS.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXTS);
+            labelFPS.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXT);
             labelFPS.setFontScale(0.42f);
             labelFPS.pack();
 
@@ -139,8 +135,25 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         GlobalAssets.loadAllRes();
     }
 
+    private void loadUserPref() {
+        GlobalVariables.userPref = Gdx.app.getPreferences(GlobalConstants.USER_PREFERENCES_NAME);
+
+        GlobalVariables.selectedTabID_main     = GlobalVariables.userPref.getInteger(GlobalConstants.KEY_SELECTED_TAB_ID_MAIN, 0);
+        GlobalVariables.selectedTabID_settings = GlobalVariables.userPref.getInteger(GlobalConstants.KEY_SELECTED_TAB_ID_SETTINGS, 0);
+
+        GlobalVariables.platformLength = GlobalVariables.userPref.getFloat(GlobalConstants.KEY_PLATFORM_LENGTH, 1.5f);
+        GlobalVariables.platformWidth  = GlobalVariables.userPref.getFloat(GlobalConstants.KEY_PLATFORM_WIDTH, 0.5f);
+        GlobalVariables.platformHeight = GlobalVariables.userPref.getFloat(GlobalConstants.KEY_PLATFORM_HEIGHT, 0.05f);
+
+        GlobalVariables.radiusWheel              = GlobalVariables.userPref.getFloat(GlobalConstants.KEY_RADIUS_WHEEL, 0.03f);
+        GlobalVariables.distanceBetweenMotors    = GlobalVariables.userPref.getFloat(GlobalConstants.KEY_DISTANCE_BETWEEN_MOTORS, 0.24f);
+        GlobalVariables.maxLengthThreadUnwinding = GlobalVariables.userPref.getFloat(GlobalConstants.KEY_MAX_LENGTH_UNWINDING, 1.0f);
+        GlobalVariables.localESP32IP             = GlobalVariables.userPref.getString(GlobalConstants.KEY_LOCAL_EPS32_IP, "255.255.255.255");
+    }
+
     private void initTabbedPanels() {
         tabbedPanelsManager = new TabbedPanelsManager();
+        tabbedPanelsManager.setName("main");
 
         tabbedPanelsManager.addTabPanel(new ConfigurationTabPanel());
         tabbedPanelsManager.addTabPanel(new EmulationTabPanel());
@@ -149,19 +162,21 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         tabbedPanelsManager.addTabPanel(new GraphsTabPanel());
         tabbedPanelsManager.addTabPanel(new InfoTabPanel());
 
+        tabbedPanelsManager.setSelectedTabID(GlobalVariables.selectedTabID_main);
         rootStage.addActor(tabbedPanelsManager);
     }
 
     private void update(float _deltaTime) {
-        tabbedPanelsManager.setPosition(0, 0);
         tabbedPanelsManager.setSize(GlobalVariables.windowWidth, GlobalVariables.windowHeight);
+        tabbedPanelsManager.setPosition(0, 0);
+
         rootStage.act(_deltaTime);
 
         if (GlobalConstants.IS_DEBUG_MODE) {
             debugStage.act(_deltaTime);
 
             labelFPS.setText("FPS: " + Gdx.app.getGraphics().getFramesPerSecond());
-            labelFPS.setPosition((GlobalVariables.windowWidth - labelFPS.getWidth()) - (GlobalVariables.isDesktop ? 5 : 25), 5);
+            labelFPS.setPosition((GlobalVariables.windowWidth - labelFPS.getWidth()) - (GlobalVariables.isDesktop ? 6 : 26), 7);
         }
     }
 

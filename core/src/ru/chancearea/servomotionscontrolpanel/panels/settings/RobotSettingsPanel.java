@@ -1,20 +1,23 @@
-package ru.chancearea.servomotionscontrolpanel.ui.tabs;
+package ru.chancearea.servomotionscontrolpanel.panels.settings;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
-public class TemplateTabPanel implements ITabPanel {
+import ru.chancearea.servomotionscontrolpanel.GlobalAssets;
+import ru.chancearea.servomotionscontrolpanel.ui.tabs.ITabPanel;
+
+public class RobotSettingsPanel implements ITabPanel {
     private int tabID       = -1;
-    private String tabTitle = "Шаблон";
+    private String tabTitle = "Настройка робота";
     private Vector2 contentPos;
     private float contentWidth;
     private float contentHeight;
 
     private final ShapeRenderer uiShapeRenderer;
 
-    public TemplateTabPanel() {
+    public RobotSettingsPanel() {
         uiShapeRenderer = new ShapeRenderer();
     }
 
@@ -29,7 +32,7 @@ public class TemplateTabPanel implements ITabPanel {
         _batch.end();
         uiShapeRenderer.setProjectionMatrix(_batch.getProjectionMatrix());
         uiShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        uiShapeRenderer.setColor(_bgColor);
+        uiShapeRenderer.setColor(GlobalAssets.DARK_COLOR_TABBED_PANEL_2);
         uiShapeRenderer.rect(contentPos.x, contentPos.y, contentWidth, contentHeight);
         uiShapeRenderer.end();
         _batch.begin();

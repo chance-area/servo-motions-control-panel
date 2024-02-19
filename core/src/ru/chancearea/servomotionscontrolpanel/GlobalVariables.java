@@ -12,8 +12,13 @@ public abstract class GlobalVariables {
 
     /** User variables */
     public static Preferences userPref           = null;
+    public static float platformLength           = -1;
+    public static float platformWidth            = -1;
+    public static float platformHeight           = -1;
     public static float radiusWheel              = -1;
     public static float distanceBetweenMotors    = -1;
     public static float maxLengthThreadUnwinding = -1;
     public static String localESP32IP            = "none";
+    public static int selectedTabID_main         = 0;
+    public static int selectedTabID_settings     = 0;
 }
