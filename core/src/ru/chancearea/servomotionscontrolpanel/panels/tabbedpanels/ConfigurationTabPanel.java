@@ -41,7 +41,7 @@ public class ConfigurationTabPanel implements ITabPanel {
 
         for (int i = 0; i < arrSpinners.length; i++) {
             arrSpinners[i] = new CustomSpinner(arrSpinnersTitles[i], initialValues[i], 0.001f, 5f, 0.001f);
-            arrSpinners[i].setSize(GlobalVariables.isDesktop ? 370 : 658, GlobalVariables.isDesktop ? 50 : 72);
+            arrSpinners[i].setSize(GlobalVariables.isDesktop ? 370 : 440, GlobalVariables.isDesktop ? 50 : 72);
             arrSpinners[i].setName((i == 0 ? "L" : (i == 1 ? "W" : "H")));
         }
     }
@@ -49,12 +49,12 @@ public class ConfigurationTabPanel implements ITabPanel {
     @Override
     public void update(float _delta) {
         for (int i = 0; i < arrSpinners.length; i++) {
-            arrSpinners[i].setPosition(40, (GlobalVariables.windowHeight + (GlobalVariables.isDesktop ? 258 : 234)) / 2 - i * arrSpinners[i].getHeight() * 2.7f * (GlobalVariables.isDesktop ? 1.35f : 1f));
+            arrSpinners[i].setPosition(40, (GlobalVariables.windowHeight + (GlobalVariables.isDesktop ? 255 : 230)) / 2 - i * arrSpinners[i].getHeight() * 2.7f * (GlobalVariables.isDesktop ? 1.35f : 1f));
             arrSpinners[i].act(_delta);
         }
 
-        tabbedPanelsSettings.setSize(-1, 500);
-        tabbedPanelsSettings.setPosition((GlobalVariables.windowWidth - tabbedPanelsSettings.getWidth()) / 2f + 207, (GlobalVariables.windowHeight - tabbedPanelsSettings.getHeight()) / 2f);
+        tabbedPanelsSettings.setSize(-1, (GlobalVariables.isDesktop ? 520 : 530));
+        tabbedPanelsSettings.setPosition((GlobalVariables.windowWidth - tabbedPanelsSettings.getWidth()) / 2f + (GlobalVariables.isDesktop ? 205 : 240), (GlobalVariables.windowHeight - tabbedPanelsSettings.getHeight()) / 2f - (GlobalVariables.isDesktop ? 8 : 16));
         tabbedPanelsSettings.act(_delta);
     }
 

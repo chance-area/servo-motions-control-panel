@@ -161,7 +161,7 @@ public class TabbedPanelsManager extends Actor {
 
         VisLabel newVisLabel = new VisLabel(_newTabPanel.getTitle());
         newVisLabel.setColor(GlobalAssets.DARK_COLOR_TABBED_TEXT);
-        newVisLabel.setFontScale(GlobalVariables.isDesktop ? 0.88f : MathPlus.roundTo( (((float) Gdx.graphics.getWidth() / 100) * 4.72f) / 100f, 2 ));
+        newVisLabel.setFontScale(GlobalVariables.isDesktop ? 0.88f : (MathPlus.roundTo( (((float) Gdx.graphics.getWidth() / 100) * 4.62f) / 100f, 2 ) - (getName().equals("settings") ? 0.2f : 0)));
         newVisLabel.pack();
 
         arrVisLabels.add(newVisLabel);
