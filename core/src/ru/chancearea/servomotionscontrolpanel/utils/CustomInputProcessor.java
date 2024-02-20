@@ -1,5 +1,6 @@
 package ru.chancearea.servomotionscontrolpanel.utils;
 
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -9,10 +10,9 @@ import ru.chancearea.servomotionscontrolpanel.ServoMotionsControlPanel;
 
 public class CustomInputProcessor implements InputProcessor {
     public static Vector2 vPointerPosition = new Vector2(-1, -1);
-
     public static boolean isDragged = false;
 
-    private Vector3 unproject(float _x, float _y) {
+    public static Vector3 unproject(float _x, float _y) {
         if (ServoMotionsControlPanel.ortCamera != null) return ServoMotionsControlPanel.ortCamera.unproject(new Vector3(_x, _y, 0));
         else return new Vector3(-1, -1, -1);
     }

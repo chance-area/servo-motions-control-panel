@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class TemplateTabPanel implements ITabPanel {
     private int tabID       = -1;
-    private String tabTitle = "Шаблон";
+    private final String tabTitle = "Шаблон";
     private Vector2 contentPos;
     private float contentWidth;
     private float contentHeight;

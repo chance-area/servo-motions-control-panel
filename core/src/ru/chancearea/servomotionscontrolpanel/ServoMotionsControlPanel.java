@@ -9,7 +9,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -21,6 +23,7 @@ import com.kotcrab.vis.ui.widget.VisLabel;
 
 import javax.swing.JFrame;
 
+import ru.chancearea.servomotionscontrolpanel.panels.settings.RobotSettingsPanel;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.InfoTabPanel;
 import ru.chancearea.servomotionscontrolpanel.ui.tabs.TabbedPanelsManager;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.ConfigurationTabPanel;
@@ -28,6 +31,7 @@ import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.DebuggingTabPa
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.EmulationTabPanel;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.GraphsTabPanel;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.RunTabPanel;
+import ru.chancearea.servomotionscontrolpanel.utils.CustomGestureListener;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
 import ru.chancearea.servomotionscontrolpanel.utils.DrawingTools;
 import ru.chancearea.servomotionscontrolpanel.utils.MathPlus;
@@ -39,9 +43,9 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
     public static OrthographicCamera ortCamera   = null;
     public static Viewport           extViewport = null;
 
+    public static InputMultiplexer rootInputMultiplexer;
     private SpriteBatch      rootBatch;
     private Stage            rootStage;
-    private InputMultiplexer rootInputMultiplexer;
     private ShapeRenderer shapeRenderer;
 
     private TabbedPanelsManager tabbedPanelsManager;
@@ -90,7 +94,6 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
 
         rootBatch            = new SpriteBatch();
         rootStage            = new Stage(extViewport);
-        rootInputMultiplexer = new InputMultiplexer();
         shapeRenderer = new ShapeRenderer();
 
         rootStage.getRoot().addCaptureListener(new InputListener() {
@@ -104,8 +107,10 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
             }
         });
 
+        rootInputMultiplexer = new InputMultiplexer();
         rootInputMultiplexer.addProcessor(rootStage);
         rootInputMultiplexer.addProcessor(new CustomInputProcessor());
+        rootInputMultiplexer.addProcessor(new GestureDetector(new CustomGestureListener()));
 
         Gdx.input.setInputProcessor(rootInputMultiplexer);
         Gdx.input.setCatchKey(Input.Keys.BACK, true);
@@ -211,6 +216,13 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         GlobalVariables.windowWidth  = extViewport.getWorldWidth();
         GlobalVariables.windowHeight = extViewport.getWorldHeight();
         rootStage.getViewport().update(_width, _height, true);
+
+        if (RobotSettingsPanel.perspectiveCamera != null) {
+            RobotSettingsPanel.perspectiveCamera.viewportWidth  = ortCamera.viewportWidth;
+            RobotSettingsPanel.perspectiveCamera.viewportHeight = ortCamera.viewportHeight;
+
+            HdpiUtils.glViewport((int) (_width / 2f), (int) (_height / 2f), _width, _height);
+        }
 
         if (GlobalConstants.IS_DEBUG_MODE) {
             debugStage.getViewport().update(_width, _height, true);

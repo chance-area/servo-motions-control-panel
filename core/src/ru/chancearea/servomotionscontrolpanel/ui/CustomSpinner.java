@@ -64,19 +64,19 @@ public class CustomSpinner extends Actor {
     public void act(float _delta) {
         super.act(_delta);
 
+        if (Gdx.input.isTouched()) touchHoldNumTicks += 1;
+        else touchHoldNumTicks = -1;
+
         rectTopButton.set(getX() + getWidth() + BORDER_SIZE - BUTTONS_SPACE_SIZE, getY() + getHeight() / 2f, BUTTONS_SPACE_SIZE - BORDER_SIZE, getHeight() / 2f);
         rectBottomButton.set(getX() + getWidth() + BORDER_SIZE - BUTTONS_SPACE_SIZE, getY(), BUTTONS_SPACE_SIZE - BORDER_SIZE, getHeight() / 2f);
 
         if (rectTopButton.contains(CustomInputProcessor.vPointerPosition) || rectBottomButton.contains(CustomInputProcessor.vPointerPosition)) {
             DrawingTools.setCursor(Cursor.HAND_CURSOR);
 
-            if (Gdx.input.isTouched()) touchHoldNumTicks += 1;
-            else touchHoldNumTicks = -1;
-
-            if (Gdx.input.justTouched() || touchHoldNumTicks >= _delta * 3800) {
+            if (Gdx.input.justTouched() || touchHoldNumTicks >= 40) {
                 touchHoldNumTicks -= 5;
 
-                float localStep = step * ( (touchHoldNumTicks >= (_delta * 3800 - 5)) ? 6f : 1f );
+                float localStep = step * ( (touchHoldNumTicks >= (40 - 5)) ? 6f : 1f );
                 value += (rectTopButton.contains(CustomInputProcessor.vPointerPosition) ? localStep : (rectBottomButton.contains(CustomInputProcessor.vPointerPosition) ? -localStep : 0));
                 value = Math.max(Math.min(MathPlus.roundTo(value, 4), maxValue), minValue);
 
