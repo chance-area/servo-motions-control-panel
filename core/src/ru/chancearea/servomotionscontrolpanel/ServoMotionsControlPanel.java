@@ -29,7 +29,7 @@ import ru.chancearea.servomotionscontrolpanel.ui.tabs.TabbedPanelsManager;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.ConfigurationTabPanel;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.DebuggingTabPanel;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.EmulationTabPanel;
-import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.GraphsTabPanel;
+import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.AnalyticsTabPanel;
 import ru.chancearea.servomotionscontrolpanel.panels.tabbedpanels.RunTabPanel;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomGestureListener;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
@@ -54,6 +54,8 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
     private SpriteBatch debugBatch;
     private Stage       debugStage;
     private VisLabel labelFPS;
+    private OrthographicCamera debugCamera;
+    private Viewport           debugViewport;
 
     public ServoMotionsControlPanel() {
         GlobalVariables.isDesktop = false;
@@ -92,8 +94,8 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         extViewport.apply(true);
         ortCamera.position.set(ortCamera.viewportWidth / 2f, ortCamera.viewportHeight / 2f, 0);
 
-        rootBatch            = new SpriteBatch();
-        rootStage            = new Stage(extViewport);
+        rootBatch     = new SpriteBatch();
+        rootStage     = new Stage(extViewport);
         shapeRenderer = new ShapeRenderer();
 
         rootStage.getRoot().addCaptureListener(new InputListener() {
@@ -120,8 +122,13 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
 
         // ------ ### Only for DEBUG mode ### ------
         if (GlobalConstants.IS_DEBUG_MODE) {
+            debugCamera   = new OrthographicCamera(GlobalVariables.windowWidth, GlobalVariables.windowHeight);
+            debugViewport = new ExtendViewport(debugCamera.viewportWidth, debugCamera.viewportHeight, debugCamera);
+            debugViewport.apply(true);
+            debugCamera.position.set(ortCamera.viewportWidth / 2f, ortCamera.viewportHeight / 2f, 0);
+
             debugBatch = new SpriteBatch();
-            debugStage = new Stage(rootStage.getViewport());
+            debugStage = new Stage(debugViewport);
 
             debugStage.setDebugAll(false);
             rootInputMultiplexer.addProcessor(debugStage);
@@ -164,7 +171,7 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         tabbedPanelsManager.addTabPanel(new EmulationTabPanel());
         tabbedPanelsManager.addTabPanel(new DebuggingTabPanel());
         tabbedPanelsManager.addTabPanel(new RunTabPanel());
-        tabbedPanelsManager.addTabPanel(new GraphsTabPanel());
+        tabbedPanelsManager.addTabPanel(new AnalyticsTabPanel());
         tabbedPanelsManager.addTabPanel(new InfoTabPanel());
 
         tabbedPanelsManager.setSelectedTabID(GlobalVariables.selectedTabID_main);
@@ -176,6 +183,7 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         tabbedPanelsManager.setPosition(0, 0);
 
         rootStage.act(_deltaTime);
+        if (RobotSettingsPanel.stage3D != null) RobotSettingsPanel.stage3D.act(_deltaTime);
 
         if (GlobalConstants.IS_DEBUG_MODE) {
             debugStage.act(_deltaTime);
@@ -188,18 +196,20 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
     private void renderFrame() {
         rootStage.draw();
 
-        rootBatch.end();
-        shapeRenderer.setProjectionMatrix(rootBatch.getProjectionMatrix());
+        if (!RobotSettingsPanel.isFullScreen) {
+            rootBatch.end();
+            shapeRenderer.setProjectionMatrix(rootBatch.getProjectionMatrix());
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        DrawingTools.enableGLBlend();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            DrawingTools.enableGLBlend();
 
-        shapeRenderer.setColor(GlobalAssets.DARK_COLOR_BG.r, GlobalAssets.DARK_COLOR_BG.g, GlobalAssets.DARK_COLOR_BG.b, 0.5f);
-        shapeRenderer.rect(0, 0, GlobalVariables.windowWidth, (GlobalVariables.isDesktop ? 30 : 34));
+            shapeRenderer.setColor(GlobalAssets.DARK_COLOR_BG.r, GlobalAssets.DARK_COLOR_BG.g, GlobalAssets.DARK_COLOR_BG.b, 0.5f);
+            shapeRenderer.rect(0, 0, GlobalVariables.windowWidth, (GlobalVariables.isDesktop ? 30 : 34));
 
-        shapeRenderer.end();
-        DrawingTools.disableGLBlend();
-        rootBatch.begin();
+            shapeRenderer.end();
+            DrawingTools.disableGLBlend();
+            rootBatch.begin();
+        }
     }
 
     private void renderDebugFrame() {
@@ -217,12 +227,7 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
         GlobalVariables.windowHeight = extViewport.getWorldHeight();
         rootStage.getViewport().update(_width, _height, true);
 
-        if (RobotSettingsPanel.perspectiveCamera != null) {
-            RobotSettingsPanel.perspectiveCamera.viewportWidth  = ortCamera.viewportWidth;
-            RobotSettingsPanel.perspectiveCamera.viewportHeight = ortCamera.viewportHeight;
-
-            HdpiUtils.glViewport((int) (_width / 2f), (int) (_height / 2f), _width, _height);
-        }
+        HdpiUtils.glViewport((int) (_width / 2f), (int) (_height / 2f), _width, _height);
 
         if (GlobalConstants.IS_DEBUG_MODE) {
             debugStage.getViewport().update(_width, _height, true);
@@ -234,9 +239,6 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
     public void render() {
         update(Gdx.app.getGraphics().getDeltaTime());
 
-        extViewport.apply();
-        ortCamera.update(true);
-
         if (Gdx.app.getGraphics().isGL30Available()) {
             Gdx.gl30.glClearColor(GlobalAssets.DARK_COLOR_BG.r, GlobalAssets.DARK_COLOR_BG.g, GlobalAssets.DARK_COLOR_BG.b, GlobalAssets.DARK_COLOR_BG.a);
             Gdx.gl30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL30.GL_COVERAGE_BUFFER_BIT_NV : 0));
@@ -245,16 +247,29 @@ public class ServoMotionsControlPanel extends ApplicationAdapter {
             Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
         }
 
+        extViewport.apply();
+        ortCamera.update(true);
+
         rootBatch.setProjectionMatrix(extViewport.getCamera().combined);
         rootBatch.begin();
-
         renderFrame();
-
         rootBatch.end();
 
-        if (GlobalConstants.IS_DEBUG_MODE) {
-            debugBatch.setProjectionMatrix(rootBatch.getProjectionMatrix());
+        if (RobotSettingsPanel.stage3D != null) {
+            RobotSettingsPanel.stage3D.getViewport().apply();
+            RobotSettingsPanel.stage3D.getCamera().update(true);
 
+            rootBatch.setProjectionMatrix(RobotSettingsPanel.stage3D.getCamera().combined);
+            rootBatch.begin();
+            RobotSettingsPanel.stage3D.draw();
+            rootBatch.end();
+        }
+
+        if (GlobalConstants.IS_DEBUG_MODE) {
+            debugViewport.apply();
+            debugCamera.update(true);
+
+            debugBatch.setProjectionMatrix(debugViewport.getCamera().combined);
             debugBatch.begin();
             renderDebugFrame();
             debugBatch.end();

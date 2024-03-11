@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import ru.chancearea.servomotionscontrolpanel.GlobalAssets;
 import ru.chancearea.servomotionscontrolpanel.GlobalConstants;
 import ru.chancearea.servomotionscontrolpanel.GlobalVariables;
+import ru.chancearea.servomotionscontrolpanel.panels.settings.RobotSettingsPanel;
 import ru.chancearea.servomotionscontrolpanel.utils.CustomInputProcessor;
 import ru.chancearea.servomotionscontrolpanel.utils.DrawingTools;
 import ru.chancearea.servomotionscontrolpanel.utils.MathPlus;
@@ -68,7 +69,7 @@ public class TabbedPanelsManager extends Actor {
             arrVisLabels.get(i).setPosition(arrTabRectangles.get(i).getX() + TABS_TITLES_PADDING_LR, arrTabRectangles.get(i).getY() + TABS_TITLES_PADDING_UB);
             arrVisLabels.get(i).act(_delta);
 
-            if (Gdx.input.justTouched()) {
+            if (Gdx.input.justTouched() && !RobotSettingsPanel.isFullScreen) {
                 if (arrTabRectangles.get(i).contains(CustomInputProcessor.vPointerPosition)) {
                     selectedTabID = i;
 
@@ -84,17 +85,19 @@ public class TabbedPanelsManager extends Actor {
             }
         }
 
-        i = 0;
-        for (Rectangle rect : arrTabRectangles) {
-            if (rect.contains(CustomInputProcessor.vPointerPosition)) {
-                hoverTabID = arrTabPanels.get(i).getID();
+        if (!RobotSettingsPanel.isFullScreen) {
+            i = 0;
+            for (Rectangle rect : arrTabRectangles) {
+                if (rect.contains(CustomInputProcessor.vPointerPosition)) {
+                    hoverTabID = arrTabPanels.get(i).getID();
 
-                DrawingTools.setCursor(Cursor.HAND_CURSOR);
-                break;
+                    DrawingTools.setCursor(Cursor.HAND_CURSOR);
+                    break;
+                }
+
+                hoverTabID = -1;
+                i++;
             }
-
-            hoverTabID = -1;
-            i++;
         }
 
         // ------- Update tab content --------
@@ -113,45 +116,47 @@ public class TabbedPanelsManager extends Actor {
             if (tabPanel.getID() == selectedTabID) tabPanel.draw(_batch, _parentAlpha, GlobalAssets.DARK_COLOR_TABBED_PANEL_1);
         }
 
-        // Draw tabs
-        for (int i = 0; i < arrVisLabels.size(); i++) {
-            _batch.end();
-            uiShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        if (!RobotSettingsPanel.isFullScreen) {
+            // Draw tabs
+            for (int i = 0; i < arrVisLabels.size(); i++) {
+                _batch.end();
+                uiShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-            Rectangle currentRect = arrTabRectangles.get(i);
+                Rectangle currentRect = arrTabRectangles.get(i);
 
-            uiShapeRenderer.setColor(((arrTabPanels.get(i).getID() != hoverTabID) ? GlobalAssets.DARK_COLOR_TABS : GlobalAssets.DARK_COLOR_TAB_HOVER));
-            uiShapeRenderer.rect(currentRect.getX(), (currentRect.getY() - LINE_HEIGHT), currentRect.getWidth(), currentRect.getHeight() + LINE_HEIGHT);
+                uiShapeRenderer.setColor(((arrTabPanels.get(i).getID() != hoverTabID) ? GlobalAssets.DARK_COLOR_TABS : GlobalAssets.DARK_COLOR_TAB_HOVER));
+                uiShapeRenderer.rect(currentRect.getX(), (currentRect.getY() - LINE_HEIGHT), currentRect.getWidth(), currentRect.getHeight() + LINE_HEIGHT);
 
-            uiShapeRenderer.end();
-            _batch.begin();
+                uiShapeRenderer.end();
+                _batch.begin();
 
-            // Draw 'Info' icon
-            if (arrVisLabels.get(i).getText().toString().equals("In")) {
-                float iconSize = arrTabRectangles.get(i).getHeight() - TABS_TITLES_PADDING_UB * 2; // width = height = size
-                _batch.draw(texInfoIcon, arrTabRectangles.get(i).getX() + (arrTabRectangles.get(i).getWidth() - iconSize) / 2f, arrTabRectangles.get(i).getY() + (arrTabRectangles.get(i).getHeight() - iconSize) / 2f, iconSize, iconSize);
-            } else {
-                arrVisLabels.get(i).draw(_batch, _parentAlpha);
-            }
-        }
-
-        // Draw lines (filled rects) bottom tabs titles
-        if (arrTabRectangles.size() > 0) {
-            _batch.end();
-            uiShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-            uiShapeRenderer.setColor(79f / 255f, 80f / 255f, 83f / 255f, 1f);
-            uiShapeRenderer.rect(getX(), arrTabRectangles.get(0).getY() - LINE_HEIGHT, getWidth(), LINE_HEIGHT);
-
-            for (int i = 0; i < arrTabPanels.size(); i++) {
-                if (arrTabPanels.get(i).getID() == selectedTabID) {
-                    uiShapeRenderer.setColor(GlobalAssets.DARK_COLOR_TAB_SELECTED);
-                    uiShapeRenderer.rect(arrTabRectangles.get(i).getX(), arrTabRectangles.get(i).getY() - LINE_HEIGHT, arrTabRectangles.get(i).getWidth(), LINE_HEIGHT * 3f);
+                // Draw 'Info' icon
+                if (arrVisLabels.get(i).getText().toString().equals("In")) {
+                    float iconSize = arrTabRectangles.get(i).getHeight() - TABS_TITLES_PADDING_UB * 2; // width = height = size
+                    _batch.draw(texInfoIcon, arrTabRectangles.get(i).getX() + (arrTabRectangles.get(i).getWidth() - iconSize) / 2f, arrTabRectangles.get(i).getY() + (arrTabRectangles.get(i).getHeight() - iconSize) / 2f, iconSize, iconSize);
+                } else {
+                    arrVisLabels.get(i).draw(_batch, _parentAlpha);
                 }
             }
 
-            uiShapeRenderer.end();
-            _batch.begin();
+            // Draw lines (filled rects) bottom tabs titles
+            if (arrTabRectangles.size() > 0) {
+                _batch.end();
+                uiShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+                uiShapeRenderer.setColor(79f / 255f, 80f / 255f, 83f / 255f, 1f);
+                uiShapeRenderer.rect(getX(), arrTabRectangles.get(0).getY() - LINE_HEIGHT, getWidth(), LINE_HEIGHT);
+
+                for (int i = 0; i < arrTabPanels.size(); i++) {
+                    if (arrTabPanels.get(i).getID() == selectedTabID) {
+                        uiShapeRenderer.setColor(GlobalAssets.DARK_COLOR_TAB_SELECTED);
+                        uiShapeRenderer.rect(arrTabRectangles.get(i).getX(), arrTabRectangles.get(i).getY() - LINE_HEIGHT, arrTabRectangles.get(i).getWidth(), LINE_HEIGHT * 3f);
+                    }
+                }
+
+                uiShapeRenderer.end();
+                _batch.begin();
+            }
         }
     }
 

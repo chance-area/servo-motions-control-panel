@@ -7,16 +7,16 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.chancearea.servomotionscontrolpanel.ui.tabs.ITabPanel;
 
-public class GraphsTabPanel implements ITabPanel {
+public class AnalyticsTabPanel implements ITabPanel {
     private int tabID       = -1;
-    private String tabTitle = "Графики";
+    private String tabTitle = "Аналитика";
     private Vector2 contentPos;
     private float contentWidth;
     private float contentHeight;
 
     private final ShapeRenderer shapeRenderer;
 
-    public GraphsTabPanel() {
+    public AnalyticsTabPanel() {
         shapeRenderer = new ShapeRenderer();
     }
 

@@ -7,7 +7,7 @@ public abstract class GlobalVariables {
     public static float windowWidth  = 1280f;
     public static float windowHeight = 720f;
 
-    /** This is Desktop?! */
+    /** This is Desktop? */
     public static boolean isDesktop = true;
 
     /** User variables */

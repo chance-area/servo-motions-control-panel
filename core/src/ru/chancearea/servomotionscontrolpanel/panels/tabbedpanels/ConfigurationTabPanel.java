@@ -65,11 +65,12 @@ public class ConfigurationTabPanel implements ITabPanel {
         shapeRenderer.setProjectionMatrix(_batch.getProjectionMatrix());
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(_bgColor);
-        shapeRenderer.rect(contentPos.x, contentPos.y, contentWidth, contentHeight);
+        shapeRenderer.rect(contentPos.x, contentPos.y, contentWidth, (RobotSettingsPanel.isFullScreen ? GlobalVariables.windowHeight : contentHeight));
         shapeRenderer.end();
         _batch.begin();
 
-        for (CustomSpinner spinner : arrSpinners) spinner.draw(_batch, _parentAlpha);
+        if (!RobotSettingsPanel.isFullScreen)
+            for (CustomSpinner spinner : arrSpinners) spinner.draw(_batch, _parentAlpha);
 
         tabbedPanelsSettings.draw(_batch, _parentAlpha);
     }

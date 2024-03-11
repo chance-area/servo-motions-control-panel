@@ -31,7 +31,7 @@ public class DesktopLauncher extends JFrame {
 			setLayout(new GridLayout(1, 1));
 			setAlwaysOnTop(false);
 			setAutoRequestFocus(true);
-			setIconImage(new ImageIcon("./app_icon.png").getImage());
+			//setIconImage(new ImageIcon("./app_icon.png").getImage());
 
 			add(new LwjglCanvas(new ServoMotionsControlPanel(this), getAppConfig()).getCanvas(), SwingConstants.CENTER);
 

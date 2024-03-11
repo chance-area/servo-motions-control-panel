@@ -41,11 +41,11 @@ public abstract class GlobalAssets {
     public static final Color DARK_COLOR_GRID_2D = new Color(129f / 255f, 130f / 255f, 133f / 255f, 1f);
 
     public static final Color DARK_COLOR_WHITE         = new Color(187f / 255f, 187f / 255f, 187f / 255f, 1f);
-    public static final Color DARK_COLOR_RED           = new Color(1, 70f / 255f, 61f / 255f, 1f);
-    public static final Color DARK_COLOR_GREEN         = new Color(6f / 255f, 194f / 255f, 112f / 255f, 1f);
-    public static final Color DARK_COLOR_ORANGE        = new Color(244f / 255f, 88f / 255f, 39f / 255f, 1f);
+    public static final Color DARK_COLOR_RED           = new Color(1f, 70f / 255f, 61f / 255f, 1f);
+    public static final Color DARK_COLOR_GREEN         = new Color(1f / 255f, 176f / 255f, 117f / 255f, 1f);
+    public static final Color DARK_COLOR_ORANGE        = new Color(244f / 255f, 88f / 255f, 39f / 255f, 0.9f);
     public static final Color DARK_COLOR_BLUE          = new Color(90f / 255f, 160f / 255f, 253f / 255f, 1f);
-    public static final Color DARK_COLOR_PINK          = new Color(1f, 101f / 255f, 148f / 255f, 1f);
+    public static final Color DARK_COLOR_PINK          = new Color(1f / 255f, 101f / 255f, 148f / 255f, 1f);
     public static final Color DARK_COLOR_YELLOW        = new Color(254f / 255f, 231f / 255f, 115f / 255f, 1f);
 
     public static AssetManager assetManager;
